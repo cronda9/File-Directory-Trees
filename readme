@@ -115,24 +115,35 @@ the error manifests itself or is "noticed" by the client.
 
       Executable         Function with the underlying error
 ===============================================================
-         ./bdtBad1        
+         ./bdtBad1        BDT_insertPath() -> Line 22
 ---------------------------------------------------------------
-         ./bdtBad2        
+         ./bdtBad2        strcat() inside BDT_insertPath() -> Line 40
 ---------------------------------------------------------------
-         ./bdtBad3        
+         ./bdtBad3        rmPath() -> Line 96
 ===============================================================
 
 For bdtBad4, you do not have to find the bug. Instead, indicate what
 is different about trying to debug this executable in gdb versus the
 other three:
 
-
+It is difficult to debug with gdb because you are getting some weird
+character error. We can pin down which sections it's probably happening
+in but not exactly what function is causing it. From the looks of it
+it seems to be garbage memory values which could not have been
+initialized in a number of places. Finding exactly where this is is a 
+different process than the run until break strategy used in teh last
+three.
 
 For bdtBad5, you do not have to find the bug. Instead, indicate one
 hypothesis for how the program could crash within the DynArray module,
 which we promise is itself correct:
 
-
+There may not be any nodes within the DynArray ADT when we call map() so
+the callback function will fail it's assertion. Essentaially, either the
+BDT is empty or the PreOrderTraversal isn't storing the nodes into the 
+nodes DynArray properly so it fails to map to non-null values. That or
+they are trying to store a NULL/empty string as the root node which
+would violate the callback function.
 
 ------------------------------------------------------------------------
 What are your critiques of the given DT implementations, as
