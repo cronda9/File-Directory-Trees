@@ -141,9 +141,7 @@ which we promise is itself correct:
 There may not be any nodes within the DynArray ADT when we call map() so
 the callback function will fail it's assertion. Essentaially, either the
 BDT is empty or the PreOrderTraversal isn't storing the nodes into the 
-nodes DynArray properly so it fails to map to non-null values. That or
-they are trying to store a NULL/empty string as the root node which
-would violate the callback function.
+nodes DynArray properly so it fails to map to non-null values.
 
 ------------------------------------------------------------------------
 What are your critiques of the given DT implementations, as
