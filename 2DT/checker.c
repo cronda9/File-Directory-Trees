@@ -13,11 +13,14 @@
 /* see checker.h for specification */
 boolean Checker_Node_isValid(Node n) {
    Node parent;
+   Node prevNode;
+   Node currNode;
    const char* npath;
    const char* ppath;
    const char* rest;
    size_t i;
-
+   size_t j;
+   
    /* Sample check: a NULL pointer is not a valid Node */
    if(n == NULL) {
       fprintf(stderr, "Node is a NULL pointer\n");
@@ -27,7 +30,7 @@ boolean Checker_Node_isValid(Node n) {
    parent = Node_getParent(n);
    if(parent != NULL) {
       npath = Node_getPath(n);
-
+   
       /* Sample check that parent's path must be prefix of n's path */
       ppath = Node_getPath(parent);
       i = strlen(ppath);
@@ -44,6 +47,18 @@ boolean Checker_Node_isValid(Node n) {
          return FALSE;
       }
    }
+
+   /* Check if the the path is sorted */
+   prevNode = Node_getChild(n,0);
+   if(prevNode != NULL)
+      for(j = 1; j< Node_getNumChildren(n); j++){
+         currNode = Node_getChild(n,j);
+         if(Node_compare(prevNode, currNode) >= 0){
+            fprintf(stderr, "Not Sorted\n");
+            return FALSE;
+         }
+         prevNode = currNode;
+      }
 
    return TRUE;
 }
@@ -86,11 +101,13 @@ boolean Checker_DT_isValid(boolean isInit, Node root, size_t count) {
 
    /* Sample check on a top-level data structure invariant:
       if the DT is not initialized, its count should be 0. */
-   if(!isInit)
+   if(!isInit){
       if(count != 0) {
          fprintf(stderr, "Not initialized, but count is not 0\n");
          return FALSE;
       }
+   
+   }
 
    /* Now checks invariants recursively at each Node from the root. */
    return Checker_treeCheck(root);

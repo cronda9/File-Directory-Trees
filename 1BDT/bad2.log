@@ -1,0 +1,43 @@
++break 20
+Breakpoint 1 at 0x4026bc: file bdt_client.c, line 20.
++run
+Starting program: /u/cronda/Assignment4/1BDT/bdtBad2 
+
+Breakpoint 1, main () at bdt_client.c:22
+/u/cronda/Assignment4/1BDT/bdt_client.c:22:814:beg:0x4026bc
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-222.sd7.aarch64
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:23:873:beg:0x4026f0
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:24:919:beg:0x402724
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:29:1143:beg:0x402758
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:30:1176:beg:0x402784
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:31:1222:beg:0x4027b8
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:32:1265:beg:0x4027ec
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:33:1293:beg:0x40281c
++n
+/u/cronda/Assignment4/1BDT/bdt_client.c:40:1601:beg:0x402824
++n
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000ffffbe646104 in strcat () from /lib64/libc.so.6
++delete
+Delete all breakpoints? (y or n) +break 34
+Breakpoint 2 at 0x402824: file bdt_client.c, line 34.
++run
+The program being debugged has been started already.
+Start it from the beginning? (y or n) Starting program: /u/cronda/Assignment4/1BDT/bdtBad2 
+
+Breakpoint 2, main () at bdt_client.c:40
+/u/cronda/Assignment4/1BDT/bdt_client.c:40:1601:beg:0x402824
++n
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000ffffbe646104 in strcat () from /lib64/libc.so.6
++delete
+Delete all breakpoints? (y or n) EOF [assumed Y]
