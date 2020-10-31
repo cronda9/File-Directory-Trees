@@ -27,6 +27,11 @@ boolean Checker_Node_isValid(Node n) {
       return FALSE;
    }
 
+   if(Node_getPath(n)==NULL){
+      fprintf(stderr, "Nodes path is null\n");
+      return FALSE;
+   }
+   
    parent = Node_getParent(n);
    if(parent != NULL) {
       npath = Node_getPath(n);
@@ -101,7 +106,7 @@ static boolean Checker_treeCheck(Node n, size_t* cnt) {
 
 /* see checker.h for specification */
 boolean Checker_DT_isValid(boolean isInit, Node root, size_t count) {
-   size_t cnt;
+   size_t cnt = 0;
    boolean traversalResult;
 
    /* Sample check on a top-level data structure invariant:
@@ -116,5 +121,11 @@ boolean Checker_DT_isValid(boolean isInit, Node root, size_t count) {
 
    /* Now checks invariants recursively at each Node from the root. */
    traversalResult = Checker_treeCheck(root, &cnt);
-   return (traversalResult && (cnt == count));
+   if(traversalResult == FALSE)
+      return FALSE;
+   else if(cnt != count){
+      fprintf(stderr, "Incorrect count of nodes\n");
+      return FALSE;
+   }
+   return TRUE;
 }
