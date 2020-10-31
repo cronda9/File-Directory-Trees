@@ -59,32 +59,21 @@ boolean Checker_Node_isValid(Node n) {
       for(j = 1; j< Node_getNumChildren(n); j++){
          currNode = Node_getChild(n,j);
          if(Node_compare(prevNode, currNode) >= 0){
-            fprintf(stderr, "C not Sorted\n");
+            fprintf(stderr, "Children are not in sorted order\n");
             return FALSE;
          }
          prevNode = currNode;
       }
-
-   /* Check if tree is doubly linked. */
-   for (j = 0; j < Node_getNumChildren(n); j++) {
-      currNode = Node_getChild(n, j);
-      if (Node_compare(n, Node_getParent(currNode)) != 0) {
-         fprintf(stderr, "P & C not doubly linked");
-         return FALSE;
-      }
-   }
 
    return TRUE;
 }
 
 /*
    Performs a pre-order traversal of the tree rooted at n.
+   Takes size_t pointer cnt and increments it for each node.
    Returns FALSE if a broken invariant is found and
-   returns TRUE otherwise.
+   returns TRUE otherwise. 
 
-   You may want to change this function's return type or
-   parameter list to facilitate constructing your checks.
-   If you do, you should update this function comment.
 */
 static boolean Checker_treeCheck(Node n, size_t* cnt) {
    size_t c;
@@ -125,13 +114,18 @@ boolean Checker_DT_isValid(boolean isInit, Node root, size_t count) {
          fprintf(stderr, "Not initialized, but count is not 0\n");
          return FALSE;
       }
-   
+   }
+   /* Checks if root nodes parent is set to NULL */
+   if(root != NULL && Node_getParent(root) != NULL){
+      fprintf(stderr, "Roots parent node is not NULL\n");
+      return FALSE;
    }
 
    /* Now checks invariants recursively at each Node from the root. */
    traversalResult = Checker_treeCheck(root, &cnt);
    if(traversalResult == FALSE)
       return FALSE;
+   /* Checks if count is correct */
    else if(cnt != count){
       fprintf(stderr, "Incorrect count of nodes\n");
       return FALSE;
