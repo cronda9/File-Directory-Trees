@@ -3,12 +3,12 @@ Assignment 4 readme File
 ------------------------------------------------------------------------
 Student 1: What is your name?
 
-
+Christian Ronda
 
 ------------------------------------------------------------------------
 Student 2: What is your name?
 
-
+Benjamin Herber
 
 ------------------------------------------------------------------------
 Student 1: What authorized sources of information did you use to
@@ -147,6 +147,13 @@ nodes DynArray properly so it fails to map to non-null values.
 What are your critiques of the given DT implementations, as
 specified in Step 2.5?
 
+The main things we noticed were that Node has a lot of bloat and
+unnecessary functions exposed in the interface. For instance,
+Node_hasChild and Node_Compare are only used in the node.c and never
+by dt.c therefore they should be made static. As for Node_addChild,
+it is never used by either DT or the Node implemenation so it should be
+removed.
 
+Note: Ask about it
 
 ------------------------------------------------------------------------
