@@ -72,10 +72,13 @@ boolean Checker_Node_isValid(Node n) {
    parameter list to facilitate constructing your checks.
    If you do, you should update this function comment.
 */
-static boolean Checker_treeCheck(Node n) {
+static boolean Checker_treeCheck(Node n, size_t* cnt) {
    size_t c;
 
    if(n != NULL) {
+
+      /* Increment num of nodes found */
+      (*cnt)++;
 
       /* Sample check on each non-root Node: Node must be valid */
       /* If not, pass that failure back up immediately */
@@ -89,7 +92,7 @@ static boolean Checker_treeCheck(Node n) {
 
          /* if recurring down one subtree results in a failed check
             farther down, passes the failure back up immediately */
-         if(!Checker_treeCheck(child))
+         if(!Checker_treeCheck(child, cnt))
             return FALSE;
       }
    }
@@ -98,6 +101,8 @@ static boolean Checker_treeCheck(Node n) {
 
 /* see checker.h for specification */
 boolean Checker_DT_isValid(boolean isInit, Node root, size_t count) {
+   size_t cnt;
+   boolean traversalResult;
 
    /* Sample check on a top-level data structure invariant:
       if the DT is not initialized, its count should be 0. */
@@ -110,5 +115,6 @@ boolean Checker_DT_isValid(boolean isInit, Node root, size_t count) {
    }
 
    /* Now checks invariants recursively at each Node from the root. */
-   return Checker_treeCheck(root);
+   traversalResult = Checker_treeCheck(root, &cnt);
+   return (traversalResult && (cnt == count));
 }
