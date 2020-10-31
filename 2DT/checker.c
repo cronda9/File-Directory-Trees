@@ -59,11 +59,20 @@ boolean Checker_Node_isValid(Node n) {
       for(j = 1; j< Node_getNumChildren(n); j++){
          currNode = Node_getChild(n,j);
          if(Node_compare(prevNode, currNode) >= 0){
-            fprintf(stderr, "Not Sorted\n");
+            fprintf(stderr, "C not Sorted\n");
             return FALSE;
          }
          prevNode = currNode;
       }
+
+   /* Check if tree is doubly linked. */
+   for (j = 0; j < Node_getNumChildren(n); j++) {
+      currNode = Node_getChild(n, j);
+      if (Node_compare(n, Node_getParent(currNode)) != 0) {
+         fprintf(stderr, "P & C not doubly linked");
+         return FALSE;
+      }
+   }
 
    return TRUE;
 }

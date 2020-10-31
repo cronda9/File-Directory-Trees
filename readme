@@ -131,7 +131,7 @@ character error. We can pin down which sections it's probably happening
 in but not exactly what function is causing it. From the looks of it
 it seems to be garbage memory values which could not have been
 initialized in a number of places. Finding exactly where this is is a 
-different process than the run until break strategy used in teh last
+different process than the run until break strategy used in the last
 three.
 
 For bdtBad5, you do not have to find the bug. Instead, indicate one
