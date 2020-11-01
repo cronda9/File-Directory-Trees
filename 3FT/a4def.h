@@ -14,7 +14,6 @@ enum { SUCCESS,
 };
 
 /* In lieu of a proper boolean datatype */
-enum bool { FALSE, TRUE };
-typedef enum bool boolean;
+typedef enum bool { FALSE, TRUE } boolean;
 
 #endif
