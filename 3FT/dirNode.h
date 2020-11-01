@@ -14,8 +14,6 @@
    the DirNode's parent (if it exists) and children (if they exist).
 */
 typedef struct pDirNode* DirNode;
-
-
 /*
    Given a parent DirNode and a directory string dir, returns a new
    DirNode structure or NULL if any allocation error occurs in creating
