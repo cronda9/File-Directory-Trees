@@ -11,8 +11,8 @@
 
 #include "dynarray.h"
 #include "fileNode.h"
-#include "dirNode.h"
 #include "a4def.h"
+#include "dirNode.h"
 
 /*--------------------------------------------------------------------*/
 /*
@@ -90,7 +90,7 @@ DirNode DirNode_create(const char *dir, DirNode parent)
 
 /*--------------------------------------------------------------------*/
 /*
-  Destroys the entire hierarchy of Nodes rooted at n,
+  Destroys the entire hierarchy of DirNodes and FileNodes rooted at n,
   including n itself.
 
   Returns the number of Nodes destroyed.
@@ -104,17 +104,21 @@ size_t DirNode_destroy(DirNode n)
 
    assert(n != NULL);
 
+   /* Destroy File children. */
+   for (j = 0; j < DynArray_getLength(n->fileChildren); j++)
+   {
+      FileNode_destroy(DynArray_get(n->fileChildren, j));
+      count++;
+   }
+
+   /* Destroy Directory children. */
    for (i = 0; i < DynArray_getLength(n->dirChildren); i++)
    {
       c = DynArray_get(n->dirChildren, i);
       count += DirNode_destroy(c);
    }
-   for (j = 0; j < DynArray_getLength(n->fileChildren); j++)
-   {
-      FileNode_destroy(DynArray_get(n->fileChildren, j));
-   }
-   DynArray_free(n->fileChildren);
 
+   DynArray_free(n->fileChildren);
    DynArray_free(n->dirChildren);
    free(n->path);
    free(n);
@@ -138,16 +142,7 @@ static int DirNode_compare(DirNode node1, DirNode node2)
 }
 
 /*--------------------------------------------------------------------*/
-/*
-   Return 1 if n has a child directory with path,
-   0 if it does not have such a child, and -1 if
-   there is an allocation error during search.
-
-   If n does have such a child, and childID is not NULL, store the
-   child's identifier in *childID. If n does not have such a child,
-   store the identifier that such a child would have in *childID.
-*/
-static int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID)
+int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID)
 {
    size_t index;
    int result;
@@ -169,16 +164,7 @@ static int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID)
 }
 
 /*--------------------------------------------------------------------*/
-/*
-   Return 1 if DirNode n has a child file with path,
-   return 0 if it does not have such a child, and
-   return -1 if there is an allocation error during search.
-
-   If n does have such a child, and childID is not NULL, store the
-   child's identifier in *childID. If n does not have such a child,
-   store the identifier that such a child would have in *childID.
-*/
-static int DirNode_hasFileChild(DirNode n, const char *path, size_t *childID)
+int DirNode_hasFileChild(DirNode n, const char *path, size_t *childID)
 {
    size_t index;
    int result;

@@ -124,4 +124,28 @@ int DirNode_unlinkDirChild(DirNode parent, DirNode child);
  */
 int DirNode_unlinkFileChild(DirNode parent, FileNode child);
 
+/*--------------------------------------------------------------------*/
+/*
+   Return 1 if n has a child directory with path,
+   return 0 if it does not have such a child, and 
+   return -1 if there is an allocation error during search.
+
+   If n does have such a child, and childID is not NULL, store the
+   child's identifier in *childID. If n does not have such a child,
+   store the identifier that such a child would have in *childID.
+*/
+int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID);
+
+/*--------------------------------------------------------------------*/
+/*
+   Return 1 if DirNode n has a child file with path,
+   return 0 if it does not have such a child, and
+   return -1 if there is an allocation error during search.
+
+   If n does have such a child, and childID is not NULL, store the
+   child's identifier in *childID. If n does not have such a child,
+   store the identifier that such a child would have in *childID.
+*/
+static int DirNode_hasFileChild(DirNode n, const char *path, size_t *childID)
+
 #endif

@@ -8,8 +8,8 @@
 
 /*
   A File Tree is a representation of a hierarchy of directories and
-  files. The File Tree is rooted at a directory, directories may
-  be inner nodes or leaves, and files are always leaves.
+  files. The File Tree is rooted at a directory or file, directories
+  may be inner nodes or leaves, and files are always leaves.
 */
 
 #include <stddef.h>
@@ -44,11 +44,11 @@ int FT_rmDir(char *path);
 /*
    Inserts a new file into the hierarchy at the given path, with the
    given contents of size length. The path's parent must exist as
-   a directory.
+   a directory or be able to be created as a directory.
    Returns SUCCESS if the new file is inserted,
    returns INITIALIZATION_ERROR if not in an initialized state,
    returns ALREADY_IN_TREE if the path already exists (as dir or file),
-   returns NO_SUCH_PATH if the path's parent doesn't exist,
+   returns CONFLICTING_PATH if path is not underneath existing root,
    returns NOT_A_DIRECTORY if the path's parent exists as a file,
    returns PARENT_CHILD_ERROR if a new child cannot be added in path,
    returns MEMORY_ERROR if unable to allocate sufficient memory.
