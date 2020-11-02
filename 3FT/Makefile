@@ -24,8 +24,8 @@ ft: ft_client.o ft.o dirNode.o fileNode.o dynarray.o
 ft_client.o: ft_client.c ft.h dirNode.h fileNode.h
 	$(CMPLR) -c ft_client.c ft.h dirNode.h fileNode.h
 
-ft.o: ft.c dirNode.h fileNode.h ft.h
-	$(CMPLR) -c ft.c dirNode.h fileNode.h
+ft.o: ft.c dirNode.h fileNode.h ft.h dynarray.h
+	$(CMPLR) -c ft.c dirNode.h fileNode.h dynarray.h
 
 dirNode.o: dirNode.c fileNode.h dirNode.h dynarray.h
 	$(CMPLR) -c dirNode.c fileNode.h dirNode.h dynarray.h
@@ -34,4 +34,4 @@ fileNode.o: fileNode.c fileNode.h
 	$(CMPLR) -c fileNode.c fileNode.h
 
 dynarray.o: dynarray.c dynarray.h
-	gcc217 -g -c dynarray.c dynarray.h
+	$(CMPLR) -c dynarray.c dynarray.h
