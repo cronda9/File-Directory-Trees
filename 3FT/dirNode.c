@@ -11,20 +11,31 @@
 
 #include "dynarray.h"
 #include "fileNode.h"
-#include "node.h"
+#include "dirNode.h"
 #include "a4def.h"
 
+/*--------------------------------------------------------------------*/
 /*
    a DirNode is an object that contains a path payload and references to
-   the DirNode's parent (if it exists) and children (if they exist).
+   the DirNode's parent (if it exists) and directory children
+   (if they exist) as well as any files stored in the directory
+   (if they exist).
 */
-struct DirNode{
+struct pDirNode {
+   /* Sting describing tree path to DirNode. */
    char *path;
+
+   /* Parent of DirNode in tree hierarchy. */
    DirNode parent;
-   DynArray_T children;
-   DynArray_T file;
+
+   /* DirNode children of current DirNode in tree hierarchy. */
+   DynArray_T dirChildren;
+
+   /* FileNode children of current DirNode in tree hierarchy. */
+   DynArray_T fileChildren;
 };
 
+/*--------------------------------------------------------------------*/
 /*
    Given a parent DirNode and a directory string dir, returns a new
    DirNode structure or NULL if any allocation error occurs in creating
@@ -43,7 +54,7 @@ DirNode DirNode_create(const char* dir, DirNode parent){
    
    assert(dir != NULL);
 
-   dirnode = malloc(sizeof(struct DirNode));
+   dirnode = malloc(sizeof(struct pDirNode));
    if(dirnode == NULL)
       return NULL;
 
@@ -61,10 +72,10 @@ DirNode DirNode_create(const char* dir, DirNode parent){
    strcat(dirnode->path, dir);
 
    dirnode->parent = parent;
-   dirnode->children = DynArray_new(0);
-   dirnode->file = DynArray_new(0);
+   dirnode->dirChildren = DynArray_new(0);
+   dirnode->fileChildren = DynArray_new(0);
    
-   if(dirnode->children == NULL){
+   if(dirnode->dirChildren == NULL){
       free(dirnode->path);
       free(dirnode);
       return NULL;
@@ -73,7 +84,7 @@ DirNode DirNode_create(const char* dir, DirNode parent){
    return dirnode;
 }
                      
-
+/*--------------------------------------------------------------------*/
 /*
   Destroys the entire hierarchy of Nodes rooted at n,
   including n itself.
@@ -84,20 +95,20 @@ size_t DirNode_destroy(DirNode n){
    size_t i;
    size_t j;
    size_t count;
-   Node c;
+   DirNode c;
 
    assert(n != NULL);
 
-   for(i = 0; i < DynArray_getLength(n->children); i++){
-      c = DynArray_get(n->children, i);
+   for(i = 0; i < DynArray_getLength(n->dirChildren); i++){
+      c = DynArray_get(n->dirChildren, i);
       count += DirNode_destroy(c);
    }
-   for(j = 0; j < DynArray_getLength(n->file); j++){
-      FileNode_destroy(DynArray_get(n->file, j));
+   for(j = 0; j < DynArray_getLength(n->fileChildren); j++){
+      FileNode_destroy(DynArray_get(n->fileChildren, j));
    }
-   DynArray_free(n->file);
+   DynArray_free(n->fileChildren);
 
-   DynArray_free(n->children);
+   DynArray_free(n->dirChildren);
    free(n->path);
    free(n);
    count++;
@@ -105,6 +116,7 @@ size_t DirNode_destroy(DirNode n){
    return count;
 }
 
+/*--------------------------------------------------------------------*/
 /*
    Returns DirNode n's path.
 */
@@ -113,37 +125,41 @@ const char* DirNode_getPath(DirNode n){
    
    return n->path;
 }
+
+/*--------------------------------------------------------------------*/
 /*
   Returns the number of child directories n has.
 */
 size_t DirNode_getNumChildren(DirNode n){
    assert(n != NULL);
 
-   return DynArray_getLength(n->children) +DynArray_getLength(n->file);
+   return DynArray_getLength(n->dirChildren) +DynArray_getLength(n->fileChildren);
 }
 
 size_t DirNode_getNumFiles(DirNode n){
    assert(n != NULL);
 
-   return DynArray_getLength(n->file);
+   return DynArray_getLength(n->fileChildren);
 }
 
 size_t DirNode_getNumDirs(DirNode n){
    assert(n != NULL);
 
-   return DynArray_getLength(n->children);
+   return DynArray_getLength(n->dirChildren);
 }
    
-
-/* returns 1 for file, 0 for directory */
+/*--------------------------------------------------------------------*/
+/* returns 1 for fileChildren, 0 for directory */
 int DirNode_type(DirNode n, size_t childID){
 
    assert(n != NULL);
 
-   if(childID < DynArray_getLength(n->file))
+   if(childID < DynArray_getLength(n->fileChildren))
       return 1;
    return 0;
 }
+
+/*--------------------------------------------------------------------*/
 /*
    Returns the child DirNode of n with identifier childID, if one exists,
    otherwise returns NULL.
@@ -153,24 +169,27 @@ DirNode DirNode_getDirChild(DirNode n, size_t childID){
    assert(n != NULL);
    assert(DirNode_type(n, childID) == 0);
    
-   childID = childID - DynArray_getLength(n->file);
-   if(DynArray_getLength(n->children) > childID)
-      return DynArray_get(n-children, childID);
+   childID = childID - DynArray_getLength(n->fileChildren);
+   if(DynArray_getLength(n->dirChildren) > childID)
+      return DynArray_get(n->dirChildren, childID);
    else
       return NULL;
 }
 
+/*--------------------------------------------------------------------*/
 DirNode DirNode_getFileChild(DirNode n, size_t childID){
  
    assert(n != NULL);
    assert(DirNode_type(n, childID) == 1);
 
-   if(DynArray_getLength(n->file) > childID)
-      return DynArray_getLength(n->file), childID;
+   if(DynArray_getLength(n->fileChildren) > childID)
+      return DynArray_getLength(n->fileChildren), childID;
    else
       return NULL;
 
 }
+
+/*--------------------------------------------------------------------*/
 /*
    Returns the parent DirNode of n, if it exists, otherwise returns NULL
 */
@@ -180,6 +199,7 @@ DirNode DirNode_getParent(DirNode n){
    return n->parent;
 }
 
+/*--------------------------------------------------------------------*/
 /*
   Makes child a child of parent, if possible, and returns SUCCESS.
   This is not possible in the following cases:
@@ -211,45 +231,51 @@ int DirNode_linkChild(DirNode parent, DirNode child){
 
    child->parent = parent;
 
-   if(DynArray_bsearch(parent->children, child, &i,
+   if(DynArray_bsearch(parent->dirChildren, child, &i,
                        (int (*)(const void*, const void*)) DirNode_compare) == 1)
       return ALREADY_IN_TREE;
 
-   if(DynArray_addAt(parent->children, i, child) == TRUE)
+   if(DynArray_addAt(parent->dirChildren, i, child) == TRUE)
       return SUCCESS;
    else
       return PARENT_CHILD_ERROR;
 }
 
+/*--------------------------------------------------------------------*/
 int DirNode_linkFileChild(DirNode parent, FileNode child){
    size_t i;
+   char* childPath;
    char *rest;
 
    assert(parent != NULL);
    assert(child != NULL);
 
-   if(Node_hasChild(parent, child->path, NULL))
+   childPath = FileNode_getPath(child);
+
+   if(Node_hasChild(parent, childPath, NULL))
       return ALREADY_IN_TREE;
    i = strlen(parent->path);
-   if(strncmp(child->path, parent->path, i))
+   if(strncmp(childPath, parent->path, i))
       return PARENT_CHILD_ERROR;
-   rest = child->path + i;
-   if(strlen(child->path) >= i && rest[0] != '/')
+   rest = childPath + i;
+   if(strlen(childPath) >= i && rest[0] != '/')
       return PARENT_CHILD_ERROR;
    rest++;
    if(strstr(rest, "/") != NULL)
       return PARENT_CHILD_ERROR;
 
-   if(DynArray_bsearch(parent->children, child, &i,
+   if(DynArray_bsearch(parent->fileChildren, child, &i,
                        (int (*)(const void*, const void*)) FileNode_compare) == 1)
       return ALREADY_IN_TREE;
 
-   if(DynArray_addAt(parent->file, i, child) == TRUE)
+   if(DynArray_addAt(parent->fileChildren, i, child) == TRUE)
       return SUCCESS;
    else
       return PARENT_CHILD_ERROR;
 
 }
+
+/*--------------------------------------------------------------------*/
 /*
   Unlinks DirNode parent from its child DirNode child, leaving the
   child DirNode unchanged.
@@ -263,28 +289,30 @@ int DirNode_unlinkDirChild(DirNode parent, DirNode child){
    assert(parent != NULL);
    assert(child != NULL);
 
-   if(DynArray_bsearch(parent->children, child, &i,
+   if(DynArray_bsearch(parent->dirChildren, child, &i,
                        (int (*)(const void*, const void*)) DirNode_compare) == 0)
       return PARENT_CHILD_ERROR;
 
-   (void) DynArray_removeAt(parent->children, i);
+   (void) DynArray_removeAt(parent->dirChildren, i);
    return SUCCESS;
 }
 
+/*--------------------------------------------------------------------*/
 int DirNode_unlinkFileChild(DirNode parent, FileNode child){
    size_t i;
 
    assert(parent != NULL);
    assert(child != NULL);
 
-   if(DynArray_bsearch(parent->file, child, &i,
+   if(DynArray_bsearch(parent->fileChildren, child, &i,
                        (int (*)(const void*, const void*)) FileNode_compare) == 0)
       return PARENT_CHILD_ERROR;
 
-   (void) DynArray_removeAt(parent->children, i);
+   (void) DynArray_removeAt(parent->dirChildren, i);
    return SUCCESS;
 }
 
+/*--------------------------------------------------------------------*/
 /*
   Creates a new DirNode such that the new DirNode's path is dir appended
   to n's path, separated by a slash, and that the new DirNode has no
@@ -316,6 +344,7 @@ int DirNode_addDirChild(DirNode parent, const char* dir){
    return result;
 }
 
+/*--------------------------------------------------------------------*/
 /*
   Returns a string representation n, or NULL if there is an allocation
   error.
@@ -335,7 +364,7 @@ char* DirNode_toString(DirNode n){
    return strcpy(path, n->path);
 }
 
-
+/*--------------------------------------------------------------------*/
 /*
   Compares node1 and node2 based on their paths.
   Returns <0, 0, or >0 if node1 is less than,
@@ -347,6 +376,8 @@ static int DirNode_compare(DirNode node1, DirNode node2){
 
    return strcmp(node1->path, node2->path);
 }
+
+/*--------------------------------------------------------------------*/
 /*
    Returns 1 if n has a child directory with path,
    0 if it does not have such a child, and -1 if
@@ -359,7 +390,7 @@ static int DirNode_compare(DirNode node1, DirNode node2){
 static int DirNode_hasChild(DirNode n, const char* path, size_t* childID){
    size_t index;
    int result;
-   Node checker;
+   DirNode checker;
 
    assert(n != NULL);
    assert(path != NULL);
@@ -367,7 +398,7 @@ static int DirNode_hasChild(DirNode n, const char* path, size_t* childID){
    checker = DirNode_create(path, NULL);
    if(checker == NULL)
       return -1;
-   result = DynArray_bsearch(n->children, checker, &index,
+   result = DynArray_bsearch(n->dirChildren, checker, &index,
                              (int (*)(const void*, const void*)) DirNode_compare);
    (void) DirNode_destroy(checker);
 
@@ -375,5 +406,3 @@ static int DirNode_hasChild(DirNode n, const char* path, size_t* childID){
       *childID = index;
    return result;
 }
-
-#endif
