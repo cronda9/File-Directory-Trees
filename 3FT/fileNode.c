@@ -32,9 +32,7 @@ FileNode FileNode_create(const char *path, void *contents, size_t length)
     FileNode newFile;
     char *cpyPath;
 
-    assert(path != NULL);
-    assert(contents != NULL);
-    assert(length != NULL);
+    assert(path != NULL); /* Contents and length can be NULL. */
 
     /* Create Defensive copy of path string. */
     cpyPath = (char *)malloc((strlen(path) + 1) * sizeof(char));
@@ -66,12 +64,14 @@ void FileNode_destroy(FileNode n)
     free(n);
 }
 
+/*--------------------------------------------------------------------*/
 void *FileNode_getContents(FileNode n)
 {
     assert(n != NULL);
     return (n->contents);
 }
 
+/*--------------------------------------------------------------------*/
 void *FileNode_update(FileNode n, void *newContents, size_t newLength)
 {
     void *oldContents;

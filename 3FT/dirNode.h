@@ -9,11 +9,14 @@
 #include <stddef.h>
 #include "a4def.h"
 
+/*--------------------------------------------------------------------*/
 /*
    a DirNode is an object that contains a path payload and references to
    the DirNode's parent (if it exists) and children (if they exist).
 */
 typedef struct pDirNode* DirNode;
+
+/*--------------------------------------------------------------------*/
 /*
    Given a parent DirNode and a directory string dir, returns a new
    DirNode structure or NULL if any allocation error occurs in creating
@@ -26,9 +29,9 @@ typedef struct pDirNode* DirNode;
    to link to the new DirNode.  The children links are initialized but
    do not point to any children.
 */
-
 DirNode DirNode_create(const char* dir, DirNode parent);
 
+/*--------------------------------------------------------------------*/
 /*
   Destroys the entire hierarchy of Nodes rooted at n,
   including n itself.
@@ -37,39 +40,71 @@ DirNode DirNode_create(const char* dir, DirNode parent);
 */
 size_t DirNode_destroy(DirNode n);
 
+/*--------------------------------------------------------------------*/
 /*
    Returns DirNode n's path.
 */
 const char* DirNode_getPath(DirNode n);
 
+/*--------------------------------------------------------------------*/
 /*
-  Returns the number of child directories n has.
+  Returns the number of child files DirNode n cointains.
 */
-size_t DirNode_getNumChildren(DirNode n);
+size_t DirNode_getNumDirs(DirNode n);
 
+/*--------------------------------------------------------------------*/
+/*
+  Returns the number of child files dir n has.
+*/
+size_t DirNode_getNumFiles(DirNode n);
+
+/*--------------------------------------------------------------------*/
 /*
    Returns the child DirNode of n with identifier childID, if one exists,
    otherwise returns NULL.
 */
-DirNode DirNode_getChild(DirNode n, size_t childID);
+DirNode DirNode_getDirChild(DirNode n, size_t childID);
 
+/*--------------------------------------------------------------------*/
+/*
+   Return the child FileNode of DirNode n with identifier childID,
+   if one exists, otherwise return NULL.
+*/
+FileNode DirNode_getFileChild(DirNode n, size_t childID);
+
+/*--------------------------------------------------------------------*/
 /*
    Returns the parent DirNode of n, if it exists, otherwise returns NULL
 */
 DirNode DirNode_getParent(DirNode n);
 
+/*--------------------------------------------------------------------*/
 /*
   Makes child a child of parent, if possible, and returns SUCCESS.
   This is not possible in the following cases:
   * child's path is not parent's path + / + directory,
     in which case returns PARENT_CHILD_ERROR
-  * parent already has a child with child's path,
+  * parent already has a directory or file child with child's path,
     in which case returns ALREADY_IN_TREE
   * parent is unable to allocate memory to store new child link,
     in which case returns MEMORY_ERROR
  */
-int DirNode_linkChild(DirNode parent, DirNode child);
+int DirNode_linkDirChild(DirNode parent, DirNode child);
 
+/*--------------------------------------------------------------------*/
+/*
+  Makes child a child of parent, if possible, and returns SUCCESS.
+  This is not possible in the following cases:
+  * child's path is not parent's path: + / + path(file),
+    in which case returns PARENT_CHILD_ERROR
+  * parent already has a directory or file child with child's path,
+    in which case returns ALREADY_IN_TREE
+  * parent is unable to allocate memory to store new child link,
+    in which case returns MEMORY_ERROR
+ */
+int DirNode_linkFileChild(DirNode parent, FileNode child);
+
+/*--------------------------------------------------------------------*/
 /*
   Unlinks DirNode parent from its child DirNode child, leaving the
   child DirNode unchanged.
@@ -77,48 +112,16 @@ int DirNode_linkChild(DirNode parent, DirNode child);
   Returns PARENT_CHILD_ERROR if child is not a child of parent,
   and SUCCESS otherwise.
  */
-int DirNode_unlinkChild(DirNode parent, DirNode child);
+int DirNode_unlinkDirChild(DirNode parent, DirNode child);
 
+/*--------------------------------------------------------------------*/
 /*
-  Creates a new DirNode such that the new DirNode's path is dir appended
-  to n's path, separated by a slash, and that the new DirNode has no
-  children of its own. The new node's parent is n, and the new node is
-  added as a child of n.
+  Unlinks DirNode parent from its child FileNode child, leaving the
+  child FileNode unchanged.
 
-  (Reiterating for clarity: unlike with DirNode_create, parent *is*
-  changed so that the link is bidirectional.)
-
-  Returns SUCCESS upon completion, or:
-  MEMORY_ERROR if the new DirNode cannot be created,
-  ALREADY_IN_TREE if parent already has a child with that path
-*/
-int DirNode_addChild(DirNode parent, const char* dir);
-
-/*
-  Returns a string representation n, or NULL if there is an allocation
-  error.
-
-  Allocates memory for the returned string,
-  which is then owned by client!
-*/
-char* DirNode_toString(DirNode n);
+  Returns PARENT_CHILD_ERROR if child is not a child of parent,
+  and SUCCESS otherwise.
+ */
+int DirNode_unlinkFileChild(DirNode parent, FileNode child);
 
 #endif
-
-/*
-  Compares node1 and node2 based on their paths.
-  Returns <0, 0, or >0 if node1 is less than,
-  equal to, or greater than node2, respectively.
-*/
-static int DirNode_compare(DirNode node1, DirNode node2);
-
-/*
-   Returns 1 if n has a child directory with path,
-   0 if it does not have such a child, and -1 if
-   there is an allocation error during search.
-
-   If n does have such a child, and childID is not NULL, store the
-   child's identifier in *childID. If n does not have such a child,
-   store the identifier that such a child would have in *childID.
-*/
-static int DirNode_hasChild(DirNode n, const char* path, size_t* childID);
