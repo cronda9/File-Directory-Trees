@@ -59,7 +59,7 @@ static DirNode FT_traversePathFrom(char *path, DirNode curr)
    /* Matching prefix but different paths so recur. */
    else if (!strncmp(path, DirNode_getPath(curr), strlen(DirNode_getPath(curr))))
    {
-      for (i = 0; i < Node_getNumDirs(curr); i++)
+      for (i = 0; i < DirNode_getNumDirs(curr); i++)
       {
          found = FT_traversePathFrom(path, Node_getDirChild(curr, i));
          if (found != NULL)
@@ -71,6 +71,34 @@ static DirNode FT_traversePathFrom(char *path, DirNode curr)
    return NULL;
 }
 
+/*--------------------------------------------------------------------*/
+/* Returns FileNode that with the correct path, or returns NULL if a 
+   file with that path does not exist */
+static FileNode FT_traversePathToFile(char *path)
+{
+   FileNode file;
+   DirNode parent;
+   size_t i;
+
+   assert(path != NULL);
+
+   if(!isInitialized != NULL)
+      return FALSE;
+   
+   /* Gets dirNode located at the prefix of path */
+   parent = FT_traversePath(path);
+   if(parent != NULL)
+      return NULL;
+
+   /* Finds fileChild of parent dirNode that has the appropriate path*/
+   for(i = 0: i < FileNode_getNumFiles(parent); i++)
+   {
+      file = DirNode_getFileChild(parent, i);
+      if(!strcmp(DirNode_getPath(file),path))
+         return file;
+   }
+   return NULL;
+}
 /*--------------------------------------------------------------------*/
 /*
    Returns the farthest DirNode reachable from the root following a
@@ -282,6 +310,69 @@ int FT_insertDir(char *path)
 }
 
 /*--------------------------------------------------------------------*/
+int FT_insertFile(char *path, void *contents, size_t length){
+   size_t oldCount;
+   FileNode file;
+   DirNode curr;
+   DirNode lastInsert;
+   DirNode firstInsert;
+   char *lastToken;
+   int result
+   
+   assert(path != NULL);
+
+   if(!isInitialized)
+      return INITIALIZATION_ERROR;
+
+   if(fileRoot != NULL)
+      return CONFLICTING_PATH;
+
+   oldCount = count;
+   
+   /* Get dirNode at prefix and insert prefix */
+   curr = FT_traversePath(path);
+   result = FT_insertRestOfPrefix(path, curr, &lastInsert, &firstInsert
+                                  &lastToken);
+   if(result != SUCCESS)
+      return result;
+
+   /* insert file */
+   file = FileNode_create((const char*)path, contents, length);
+   if (file == NULL)
+   {
+      FileNode_destroy(firstInsert);
+      count = oldCount;
+   }
+   
+   count++;
+   result = DirNode_linkFileChild(lastInsert, file);
+   if (result != SUCESS)
+   {
+      FileNode_destroy(firstInsert);
+      FileNode_destroy(file);
+      count = oldcount;
+   }
+
+   /* do final link */
+   if (curr == NULL)
+   {
+      root = firstInsert;
+      return SUCCESS;
+   }
+   else
+   {
+      result = FT_linkParentToChild(curr, firstInsert);
+      if (result != SUCCESS)
+      {
+         (void)Node_destroy(firstInsert);
+         count = oldCount;
+      }
+
+      return result;
+   }
+}
+
+/*--------------------------------------------------------------------*/
 boolean FT_containsDir(char *path)
 {
    DirNode curr;
@@ -308,6 +399,129 @@ boolean FT_containsDir(char *path)
 }
 
 /*--------------------------------------------------------------------*/
+boolean FT_containsFile(char *path)
+{
+   FileNode curr;
+
+   assert(path != NULL);
+
+   if (!isInitialized)
+      return FALSE;
+
+   /* if the the root is a file but the path does not equal 
+      the roots path */
+   if(fileRoot != NULL && strcmp(path, FileNode_getPath(fileRoot)))
+      return FALSE;
+   
+   curr = FT_traversePathToFile(path);
+
+   if(curr == NULL)
+      return FALSE;
+
+   return TRUE;
+}
+
+/*--------------------------------------------------------------------*/
+void *FT_getFileContents(char *path)
+{
+   FileNode curr;
+
+   assert(path != NULL);
+
+   curr = FT_traversePathToFile(path);
+
+   if(curr == NULL)
+      return NULL;
+
+   return FileNode_getContents(curr);
+}
+
+/*--------------------------------------------------------------------*/
+void *Ft_replaceFileContents(char *path, void *newContents,
+                             size_t newLength)
+{
+   void *oldContents;
+   FileNode curr;
+
+   assert(path != NULL);
+   assert(newContents != NULL);
+   assert(newLength != NULL);
+   assert(strlen(newContents) == newLength); /* not sure if new lnegth accounts for null byte*/
+   
+   curr = FT_traversePathToFile(path);
+
+   if(curr == NULL)
+      return NULL;
+
+   oldContents = FileNode_update(curr, newContents, newLength);
+
+   return oldContents;
+   
+}
+/*--------------------------------------------------------------------*/
+int FT_stat(char *path, boolean *type, size_t *length)
+{
+   char *copyPath;
+   char *pathToken;
+   char *parentPath;
+   size_t f;
+   size_t d;
+   DirNode parent;
+   DirNode child;
+   FileNode file;
+   
+   assert(path != NULL);
+
+   if(!isInitialized)
+      return INITIALIZATION_ERROR;
+
+   /* handles case if root is a file */
+   if(fileRoot != NULL)
+   {
+      if(!strcmp(FileNode_getPath(fileRoot),path)){
+         *type = TRUE;
+         *length = strlen(FileNode_getContents(fileRoot));
+         return SUCCESS;
+      }
+      else
+         return NO_SUCH_PATH;
+   }
+
+   /* Gets dirNode located at the prefix of path */
+   parent = FT_traversePath(path);
+
+   /* if prefix is not a path */
+   if(parent == NULL)
+      return NO_SUCH_PATH;
+
+   /* checks if the path matches any of the dirChildren of parent */
+   for(d = 0; d < DirNode_getNumDirs(parent); d++)
+   {
+      child = DirNode_getDirChild(parent, d);
+      if(!strcmp(DirNode_getPath(child),path))
+      {
+         *type = FALSE;
+         return SUCCESS;
+      }   
+   }
+
+   /* checks if the path matches any of the fileChildren of parent */
+   for(f = 0; f < DirNode_getNumFiles(parent); f++)
+   {
+      file = DirNode_getFileChild(parent, f);
+      if(!strcmp(DirNode_getPath(file), path))
+      {
+         *type = TRUE;
+         *length = strlen(FileNode_getContents(file));
+         return SUCCESS;
+      }
+   }
+
+   return NO_SUCH_PATH;
+   
+}
+
+/*--------------------------------------------------------------------*/
 /*
   Removes the directory hierarchy rooted at path starting from Node
   curr. If curr is the data structure's root, root becomes NULL.
@@ -323,14 +537,14 @@ static int FT_rmPathAt(char *path, DirNode curr)
    assert(path != NULL);
    assert(curr != NULL);
 
-   parent = Node_getParent(curr);
+   parent = DirNode_getParent(curr);
 
-   if (!strcmp(path, Node_getPath(curr)))
+   if (!strcmp(path, DirNode_getPath(curr)))
    {
       if (parent == NULL)
          root = NULL;
       else
-         Node_unlinkChild(parent, curr);
+         DirNode_unlinkDirChild(parent, curr);
 
       FT_removePathFrom(curr);
 
@@ -365,6 +579,57 @@ int FT_rmDir(char *path)
       return NOT_A_DIRECTORY;
 
    result = FT_rmPathAt(path, curr);
+
+   return result;
+}
+
+/*--------------------------------------------------------------------*/
+int FT_rmFile(char *path)
+{
+   int result;
+   FileNode file = NULL;
+   FileNode curr;
+   DirNode parent;
+   size_t i;
+   
+   assert(path != NULL);
+
+   if(!isInitialized)
+      return INITIALIZATION_ERROR;
+
+   /* Handles when path is the root and root is a File */
+   if(fileRoot != NULL && !strcmp(path,FileNode_getPath(fileRoot)))
+   {
+      FileNode_destroy(fileRoot);
+      return SUCCESS;
+   } /* Handles when the root is a file but the path does not equal the path of the file root */
+   else if (fileRoot != NULL && strcmp(path,FileNode_getPath(fileRoot)))
+      return NOT_A_DIRECTORY;
+
+   /* Gets dirNode located at the prefix of path */
+   parent = FT_traversePath(path);
+   if (parent == NULL)
+      return NOT_A_DIRECTORY;
+
+   /* Checks if file is in the fileChild of parent dirNode */ 
+   for(i = 0: i < FileNode_getNumFiles(parent); i++)
+   {
+      curr = DirNode_getFileChild(parent, i);
+      if(!strcmp(DirNode_getPath(curr),path))
+         file = curr;
+   }
+
+   /* handles when the fileChild was not found */
+   if(file == NULL)
+      return NOT_A_FILE;
+
+   result = DirNode_unlinkFileChild(parent, file);
+   if(result != 0)
+      return result;
+
+   FileNode_destroy(file);
+   
+   result = FT_rmPathAt(DirNode_getPath(parent), parent);
 
    return result;
 }

@@ -16,13 +16,13 @@
 #include "a4def.h"
 
 /*
-   Inserts a new directory into the tree at path, if possible.
-   Returns SUCCESS if the new directory is inserted,
-   returns INITIALIZATION_ERROR if not in an initialized state,
-   returns CONFLICTING_PATH if path is not underneath existing root,
-   returns ALREADY_IN_TREE if the path already exists (as dir or file),
-   returns PARENT_CHILD_ERROR if a new child cannot be added in path
-   returns MEMORY_ERROR if unable to allocate sufficient memory.
+  Inserts a new directory into the tree at path, if possible.
+  Returns SUCCESS if the new directory is inserted,
+  returns INITIALIZATION_ERROR if not in an initialized state,
+  returns CONFLICTING_PATH if path is not underneath existing root,
+  returns ALREADY_IN_TREE if the path already exists (as dir or file),
+  returns PARENT_CHILD_ERROR if a new child cannot be added in path
+  returns MEMORY_ERROR if unable to allocate sufficient memory.
 */
 int FT_insertDir(char *path);
 
@@ -42,16 +42,16 @@ boolean FT_containsDir(char *path);
 int FT_rmDir(char *path);
 
 /*
-   Inserts a new file into the hierarchy at the given path, with the
-   given contents of size length. The path's parent must exist as
-   a directory or be able to be created as a directory.
-   Returns SUCCESS if the new file is inserted,
-   returns INITIALIZATION_ERROR if not in an initialized state,
-   returns ALREADY_IN_TREE if the path already exists (as dir or file),
-   returns CONFLICTING_PATH if path is not underneath existing root,
-   returns NOT_A_DIRECTORY if the path's parent exists as a file,
-   returns PARENT_CHILD_ERROR if a new child cannot be added in path,
-   returns MEMORY_ERROR if unable to allocate sufficient memory.
+  Inserts a new file into the hierarchy at the given path, with the
+  given contents of size length. The path's parent must exist as
+  a directory or be able to be created as a directory.
+  Returns SUCCESS if the new file is inserted,
+  returns INITIALIZATION_ERROR if not in an initialized state,
+  returns ALREADY_IN_TREE if the path already exists (as dir or file),
+  returns CONFLICTING_PATH if path is not underneath existing root,
+  returns NOT_A_DIRECTORY if the path's parent exists as a file,
+  returns PARENT_CHILD_ERROR if a new child cannot be added in path,
+  returns MEMORY_ERROR if unable to allocate sufficient memory.
 */
 int FT_insertFile(char *path, void *contents, size_t length);
 
@@ -96,10 +96,10 @@ void *FT_replaceFileContents(char *path, void *newContents,
   When returning SUCCESSS,
   if path is a directory: *type is set to FALSE, *length is unchanged
   if path is a file: *type is set to TRUE, and
-                     *length is set to the length of file's contents.
+  *length is set to the length of file's contents.
 
   When returning a non-SUCCESS status, *type and *length are unchanged.
- */
+*/
 int FT_stat(char *path, boolean* type, size_t* length);
 
 /*

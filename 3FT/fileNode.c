@@ -77,7 +77,7 @@ void *FileNode_update(FileNode n, void *newContents, size_t newLength)
     void *oldContents;
 
     assert(n != NULL);
-    assert(newContents != NULL);
+    assert(newContents != NULL); /* is it ok for conetents to be NULL */
     assert(newLength != NULL);
 
     oldContents = (n->contents);
