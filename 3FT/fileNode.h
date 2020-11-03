@@ -6,15 +6,15 @@
 #ifndef FILE_NODE_INCLUDED
 #define FILE_NODE_INCLUDED
 
-#include <stdlib.h>
 #include "a4def.h"
+#include <stdlib.h>
 
 /*--------------------------------------------------------------------*/
 /*
     FileNode is an object that stores the contents and some metadata
     (path, length) associated with a given file.
 */
-typedef struct pFileNode* FileNode;
+typedef struct pFileNode *FileNode;
 
 /*--------------------------------------------------------------------*/
 /*
@@ -24,7 +24,8 @@ typedef struct pFileNode* FileNode;
     node to memory allocation or otherwise, return NULL. Return new
     FileNode upon success.
 */
-FileNode FileNode_create(const char* path, void *contents, size_t length);
+FileNode FileNode_create(const char *path, void *contents,
+                         size_t length);
 
 /*--------------------------------------------------------------------*/
 /*
@@ -34,14 +35,14 @@ void FileNode_destroy(FileNode n);
 
 /*--------------------------------------------------------------------*/
 /*
-    Take an exsisting FileNode n as argument and return stored
+    Take an existing FileNode n as argument and return stored
     contents associated with that file.
 */
 void *FileNode_getContents(FileNode n);
 
 /*--------------------------------------------------------------------*/
 /*
-    Take an exsisting FileNode n and updates its contents with
+    Take an existing FileNode n and updates its contents with
     the generic pointer newContents and stored length with newLength.
     Return old contents upon success and NULL upon failure.
 */
@@ -50,7 +51,7 @@ void *FileNode_update(FileNode n, void *newContents, size_t newLength);
 /*--------------------------------------------------------------------*/
 /*
     Take an existing FileNode n and tries to retrieve the metadata
-    length associated with it. Return lenght stored in node's metadata.
+    length associated with it. Return length stored in node's metadata.
 */
 size_t FileNode_stats(FileNode n);
 
