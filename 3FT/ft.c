@@ -91,7 +91,7 @@ static FileNode FT_traversePathToFile(char *path)
       return NULL;
 
    /* Finds fileChild of parent dirNode that has the appropriate path*/
-   for(i = 0: i < FileNode_getNumFiles(parent); i++)
+   for(i = 0; i < FileNode_getNumFiles(parent); i++)
    {
       file = DirNode_getFileChild(parent, i);
       if(!strcmp(DirNode_getPath(file),path))
@@ -311,13 +311,13 @@ int FT_insertDir(char *path)
 
 /*--------------------------------------------------------------------*/
 int FT_insertFile(char *path, void *contents, size_t length){
-   size_t oldCount;
+   size_t oldCount = count;
    FileNode file;
    DirNode curr;
    DirNode lastInsert;
    DirNode firstInsert;
    char *lastToken;
-   int result
+   int result;
    
    assert(path != NULL);
 
@@ -326,12 +326,10 @@ int FT_insertFile(char *path, void *contents, size_t length){
 
    if(fileRoot != NULL)
       return CONFLICTING_PATH;
-
-   oldCount = count;
    
    /* Get dirNode at prefix and insert prefix */
    curr = FT_traversePath(path);
-   result = FT_insertRestOfPrefix(path, curr, &lastInsert, &firstInsert
+   result = FT_insertRestOfPrefix(path, curr, &lastInsert, &firstInsert,
                                   &lastToken);
    if(result != SUCCESS)
       return result;
@@ -346,11 +344,11 @@ int FT_insertFile(char *path, void *contents, size_t length){
    
    count++;
    result = DirNode_linkFileChild(lastInsert, file);
-   if (result != SUCESS)
+   if (result != SUCCESS)
    {
       FileNode_destroy(firstInsert);
       FileNode_destroy(file);
-      count = oldcount;
+      count = oldCount;
    }
 
    /* do final link */
@@ -612,7 +610,7 @@ int FT_rmFile(char *path)
       return NOT_A_DIRECTORY;
 
    /* Checks if file is in the fileChild of parent dirNode */ 
-   for(i = 0: i < FileNode_getNumFiles(parent); i++)
+   for(i = 0; i < FileNode_getNumFiles(parent); i++)
    {
       curr = DirNode_getFileChild(parent, i);
       if(!strcmp(DirNode_getPath(curr),path))
