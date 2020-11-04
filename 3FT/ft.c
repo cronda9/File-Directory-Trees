@@ -314,6 +314,7 @@ int FT_insertFile(char *path, void *contents, size_t length) {
    if (file == NULL) {
       DirNode_destroy(firstInsert);
       count = oldCount;
+      return MEMORY_ERROR;
    }
    count++;
 
@@ -328,8 +329,10 @@ int FT_insertFile(char *path, void *contents, size_t length) {
    curr = FT_traversePath(path);
    result = FT_insertRestOfPrefix(path, curr, &lastInsert, &firstInsert,
                                   NULL);
-   if (result != SUCCESS)
+   if (result != SUCCESS) {
+      FileNode_destroy(file);
       return result;
+   }
 
    assert(lastInsert);
    result = DirNode_linkFileChild(lastInsert, file);
