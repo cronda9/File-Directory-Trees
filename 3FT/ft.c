@@ -677,9 +677,10 @@ char *FT_toString(void) {
       result = (char *)malloc(strlen(tmpStr) + 2);
       if (result == NULL)
          return NULL;
-      result = stpcpy(result, tmpStr);
-      *result = '\n';
-      *(result + 1) = '\0';
+      result = strcpy(result, tmpStr);
+      totalStrlen = strlen(result);
+      result[totalStrlen] = '\n';
+      result[totalStrlen + 1] = '\0';
       return result;
    }
 
