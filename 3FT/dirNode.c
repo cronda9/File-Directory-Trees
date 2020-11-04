@@ -56,7 +56,10 @@ DirNode DirNode_create(const char *dir, DirNode parent) {
    if (dirnode == NULL)
       return NULL;
 
-   dirnode->path = malloc(strlen(dir) + 1 + strlen(parent->path) + 1);
+   if(parent == NULL)
+      dirnode->path = malloc(strlen(dir)+1);
+   else
+      dirnode->path = malloc(strlen(parent->path) + 1 + strlen(dir) + 1);
    if (dirnode->path == NULL) {
       free(dirnode);
       return NULL;

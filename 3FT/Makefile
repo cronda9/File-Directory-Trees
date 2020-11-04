@@ -5,7 +5,7 @@
 # -------------------------------------------------------------------- #
 
 # Macros
-CMPLR = gcc217
+CMPLR = gcc217 -g
 
 # Useful Pseudo-Targets
 all: ft

@@ -174,9 +174,10 @@ static int FT_insertRestOfPrefix(char *path, DirNode parent,
    assert(firstDir != NULL);
 
    /* Check if dir has conflicting path or already in tree. */
-   if ((curr == NULL) && (root != NULL))
+   if (curr == NULL) {
+      if (root != NULL)
       return CONFLICTING_PATH;
-   else if (!strcmp(path, DirNode_getPath(curr)))
+   } else if (!strcmp(path, DirNode_getPath(curr)))
       return ALREADY_IN_TREE;
    else
       restPath += (strlen(DirNode_getPath(curr)) + 1);
