@@ -269,7 +269,6 @@ int FT_insertDir(char *path) {
       return MEMORY_ERROR;
    }
    count++;
-   fprintf(stderr, "%s", lastToken);
    result = FT_linkParentToChild(lastInsert, curr);
    if (result != SUCCESS) {
       if (firstInsert != NULL)
@@ -560,9 +559,8 @@ int FT_rmDir(char *path) {
 int FT_rmFile(char *path) {
    int result;
    FileNode file = NULL;
-   FileNode curr;
    DirNode parent;
-   size_t i;
+   size_t fileIndex;
 
    assert(path != NULL);
 
@@ -586,23 +584,16 @@ int FT_rmFile(char *path) {
       return NO_SUCH_PATH;
 
    /* Checks if file is in the fileChild of parent dirNode */
-   for (i = 0; i < DirNode_getNumFiles(parent); i++) {
-      curr = DirNode_getFileChild(parent, i);
-      if (!strcmp(FileNode_getPath(curr), path))
-         file = curr;
-   }
-
-   /* handles when the fileChild was not found */
-   if (file == NULL)
+   if (DirNode_hasFileChild(parent, path, &fileIndex))
+      file = DirNode_getFileChild(parent, fileIndex);
+   else
       return NOT_A_FILE;
 
    result = DirNode_unlinkFileChild(parent, file);
-   if (result != 0)
+   if (result != SUCCESS)
       return result;
 
    FileNode_destroy(file);
-
-   result = FT_rmPathAt((char *)DirNode_getPath(parent), parent);
 
    return result;
 }
@@ -648,15 +639,15 @@ static size_t FT_preOrderTraversal(DirNode n, DynArray_T d, size_t i) {
       (void)DynArray_set(d, i, DirNode_getPath(n));
       i++;
 
+      /* Traverse Dir children last. */
+      for (c = 0; c < DirNode_getNumDirs(n); c++)
+         i = FT_preOrderTraversal(DirNode_getDirChild(n, c), d, i);
+
       /* Traverse File children first. */
       for (c = 0; c < DirNode_getNumFiles(n); c++, i++) {
          fileChild = DirNode_getFileChild(n, c);
          (void)DynArray_set(d, i, FileNode_getPath(fileChild));
       }
-
-      /* Traverse Dir children last. */
-      for (c = 0; c < DirNode_getNumDirs(n); c++)
-         i = FT_preOrderTraversal(DirNode_getDirChild(n, c), d, i);
    }
    return i;
 }
@@ -670,6 +661,7 @@ static size_t FT_preOrderTraversal(DirNode n, DynArray_T d, size_t i) {
 static void FT_strlenAccumulate(char *str, size_t *pAcc) {
    assert(pAcc != NULL);
 
+   fprintf(stderr, "on path.. %s\n", str);
    if (str != NULL)
       *pAcc += (strlen(str) + 1);
 }
