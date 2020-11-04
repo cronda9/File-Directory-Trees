@@ -72,8 +72,6 @@ void *FileNode_update(FileNode n, void *newContents, size_t newLength) {
    void *oldContents;
 
    assert(n != NULL);
-   assert(newContents != NULL); /* is it ok for conetents to be NULL */
-   assert(newLength != NULL);
 
    oldContents = (n->contents);
    n->contents = newContents;
@@ -83,7 +81,7 @@ void *FileNode_update(FileNode n, void *newContents, size_t newLength) {
 }
 
 /*--------------------------------------------------------------------*/
-size_t FileNode_stats(FileNode n) {
+size_t FileNode_getStats(FileNode n) {
    assert(n != NULL);
    return (n->length);
 }

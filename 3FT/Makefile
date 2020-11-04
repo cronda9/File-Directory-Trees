@@ -21,8 +21,8 @@ ft: ft_client.o ft.o dirNode.o fileNode.o dynarray.o
 	$(CMPLR) -o ft ft_client.o ft.o dirNode.o fileNode.o dynarray.o
 
 # Dependencies
-ft_client.o: ft_client.c ft.h dirNode.h fileNode.h
-	$(CMPLR) -c ft_client.c ft.h dirNode.h fileNode.h
+ft_client.o: ft_client.c ft.h
+	$(CMPLR) -c ft_client.c ft.h
 
 ft.o: ft.c dirNode.h fileNode.h ft.h dynarray.h
 	$(CMPLR) -c ft.c dirNode.h fileNode.h dynarray.h

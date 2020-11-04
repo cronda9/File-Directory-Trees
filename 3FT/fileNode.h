@@ -53,7 +53,7 @@ void *FileNode_update(FileNode n, void *newContents, size_t newLength);
     Take an existing FileNode n and tries to retrieve the metadata
     length associated with it. Return length stored in node's metadata.
 */
-size_t FileNode_stats(FileNode n);
+size_t FileNode_getStats(FileNode n);
 
 /*--------------------------------------------------------------------*/
 /*

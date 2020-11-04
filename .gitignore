@@ -1,2 +1,6 @@
-.vscode
-.history
+*.vscode
+*.history
+*.o
+*.i
+*.s
+*.gch

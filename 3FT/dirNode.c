@@ -12,7 +12,6 @@
 #include "a4def.h"
 #include "dirNode.h"
 #include "dynarray.h"
-#include "fileNode.h"
 
 /*--------------------------------------------------------------------*/
 /*
@@ -93,7 +92,7 @@ DirNode DirNode_create(const char *dir, DirNode parent) {
 size_t DirNode_destroy(DirNode n) {
    size_t i;
    size_t j;
-   size_t count;
+   size_t count = 0;
    DirNode c;
 
    assert(n != NULL);
@@ -158,18 +157,18 @@ int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID) {
 int DirNode_hasFileChild(DirNode n, const char *path, size_t *childID) {
    size_t index;
    int result;
-   DirNode checker;
+   FileNode checker;
 
    assert(n != NULL);
    assert(path != NULL);
 
-   checker = FileNode_create(path, NULL, NULL);
+   checker = FileNode_create(path, NULL, 0);
    if (checker == NULL)
       return -1;
    result = DynArray_bsearch(
        n->fileChildren, checker, &index,
        (int (*)(const void *, const void *))FileNode_compare);
-   (void)DirNode_destroy(checker);
+   (void)FileNode_destroy(checker);
 
    if (childID != NULL)
       *childID = index;
@@ -215,7 +214,7 @@ FileNode DirNode_getFileChild(DirNode n, size_t childID) {
    assert(n != NULL);
 
    if (DynArray_getLength(n->fileChildren) > childID)
-      return DynArray_getLength(n->fileChildren), childID;
+      return DynArray_get(n->fileChildren, childID);
    else
       return NULL;
 }
@@ -273,7 +272,7 @@ int DirNode_linkFileChild(DirNode parent, FileNode child) {
 
    childPath = FileNode_getPath(child);
 
-   if (Node_hasDirChild(parent, childPath, NULL))
+   if (DirNode_hasDirChild(parent, childPath, NULL))
       return ALREADY_IN_TREE;
    if (DirNode_hasFileChild(parent, childPath, NULL))
       return ALREADY_IN_TREE;

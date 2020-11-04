@@ -6,8 +6,9 @@
 #ifndef DIR_NODE_INCLUDED
 #define DIR_NODE_INCLUDED
 
-#include "a4def.h"
 #include <stddef.h>
+#include "a4def.h"
+#include "fileNode.h"
 
 /*--------------------------------------------------------------------*/
 /*
@@ -146,7 +147,7 @@ int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID);
   child's identifier in *childID. If n does not have such a child,
   store the identifier that such a child would have in *childID.
 */
-static int DirNode_hasFileChild(DirNode n, const char *path,
-                                size_t *childID)
+int DirNode_hasFileChild(DirNode n, const char *path,
+                                size_t *childID);
 
 #endif
