@@ -55,7 +55,8 @@ DirNode DirNode_create(const char *dir, DirNode parent) {
    dirnode = malloc(sizeof(struct pDirNode));
    if (dirnode == NULL)
       return NULL;
-
+   
+   /* Memory Allocation. */
    if(parent == NULL)
       dirnode->path = malloc(strlen(dir)+1);
    else
@@ -65,12 +66,14 @@ DirNode DirNode_create(const char *dir, DirNode parent) {
       return NULL;
    }
 
+   /* Copy and/or concatenate path. */
    if (parent != NULL) {
       strcpy(dirnode->path, parent->path);
       strcat(dirnode->path, "/");
+      strcat(dirnode->path, dir);
    }
-
-   strcat(dirnode->path, dir);
+   else
+      strcpy(dirnode->path, dir);
 
    dirnode->parent = parent;
    dirnode->dirChildren = DynArray_new(0);
@@ -80,7 +83,7 @@ DirNode DirNode_create(const char *dir, DirNode parent) {
       free(dirnode->path);
       free(dirnode);
       return NULL;
-   }
+   } /* Check fileChildren Validity too. */
 
    return dirnode;
 }
@@ -143,7 +146,9 @@ int DirNode_hasDirChild(DirNode n, const char *path, size_t *childID) {
    assert(n != NULL);
    assert(path != NULL);
 
+   fprintf(stderr,"%s\n",path);
    checker = DirNode_create(path, NULL);
+   fprintf(stderr,"%s\n",DirNode_getPath(checker));
    if (checker == NULL)
       return -1;
    result = DynArray_bsearch(

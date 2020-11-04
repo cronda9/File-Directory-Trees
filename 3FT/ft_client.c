@@ -56,7 +56,6 @@ int main(void) {
   assert(FT_containsDir("a/d/A") == FALSE);
   assert(FT_containsFile("a/d/A") == TRUE);
   assert((temp = FT_toString()) != NULL);
-  fprintf(stderr, "%s\n", temp);
   free(temp);
   assert(FT_insertDir("a/b/c") == ALREADY_IN_TREE);
   assert(FT_insertFile("a/d/A", NULL, 0) == ALREADY_IN_TREE);
@@ -125,7 +124,7 @@ int main(void) {
   assert(b == TRUE);
   assert(l == 0);
   assert(FT_replaceFileContents("A","Kernighan",10) == NULL);
-  assert(!strcmp((char*)FT_getFileContents("A"),"Kernighan"));
+  assert(!strcmp((char *)FT_getFileContents("A"), "Kernighan"));
   assert(FT_stat("A", &b, &l) == SUCCESS);
   assert(b == TRUE);
   assert(l == 10);
@@ -163,7 +162,8 @@ int main(void) {
   fprintf(stderr, "%s\n", temp);
   free(temp);
   assert(FT_insertDir("a/y/CHILD2DIR") == SUCCESS);
-  assert(FT_insertFile("a/y/CHILD2FILE", NULL, 0) == SUCCESS);
+  assert(FT_containsDir("a/y/CHILD2DIR"));
+  assert(FT_insertFile("a/y/CHILD2FILE", NULL, 0) == SUCCESS); /* DynArray pblm. */
   assert(FT_insertDir("a/y/CHILD3DIR") == SUCCESS);
   assert(FT_insertFile("a/y/CHILD1FILE", NULL, 0) == SUCCESS);
   assert(FT_insertDir("a/y/CHILD2DIR/CHILD4DIR") == SUCCESS);
