@@ -409,6 +409,7 @@ static int FT_rmPathAt(char *path, Node curr) {
 /*--------------------------------------------------------------------*/
 int FT_rmDir(char *path) {
    Node curr;
+   Node parent;
 
    assert(path != NULL);
 
@@ -426,12 +427,24 @@ int FT_rmDir(char *path) {
    if (Node_getType(curr) == FIL)
       return NOT_A_DIRECTORY;
 
-   return FT_rmPathAt(path, curr);
+   parent = Node_getParent(curr);
+   if (!strcmp(path, Node_getPath(curr))) {
+      if (parent == NULL)
+         root = NULL;
+      else
+         Node_unlinkChild(parent, curr);
+
+      count -= Node_destroy(curr);
+
+      return SUCCESS;
+   } else
+      return NO_SUCH_PATH;
 }
 
 /*--------------------------------------------------------------------*/
 int FT_rmFile(char *path) {
    Node curr;
+   Node parent;
 
    assert(path != NULL);
 
@@ -449,7 +462,18 @@ int FT_rmFile(char *path) {
    if (Node_getType(curr) == DIR)
       return NOT_A_FILE;
 
-   return FT_rmPathAt(path, curr);
+   parent = Node_getParent(curr);
+   if (!strcmp(path, Node_getPath(curr))) {
+      if (parent == NULL)
+         root = NULL;
+      else
+         Node_unlinkChild(parent, curr);
+
+      count -= Node_destroy(curr);
+
+      return SUCCESS;
+   } else
+      return NO_SUCH_PATH;
 }
 
 /*--------------------------------------------------------------------*/
