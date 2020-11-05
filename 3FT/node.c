@@ -181,8 +181,8 @@ int Node_compare(Node node1, Node node2) {
 
    /* FILEs are less than DIRs. */
    if (node1->type == FIL && node2->type == DIR)
-      return -1;
-   return 1;
+      return 1;
+   return -1;
 }
 
 /*--------------------------------------------------------------------*/
