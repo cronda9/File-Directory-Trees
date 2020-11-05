@@ -1,25 +1,29 @@
 /*--------------------------------------------------------------------*/
 /* node.h                                                             */
-/* Author: Christopher Moretti                                        */
+/* Author: Christian Ronda & Benjamin Herber                          */
 /*--------------------------------------------------------------------*/
 
 #ifndef NODE_INCLUDED
 #define NODE_INCLUDED
 
-#include <stddef.h>
 #include "a4def.h"
+#include <stddef.h>
 
 /*
    a Node is an object that contains a path payload and references to
    the Node's parent (if it exists) and children (if they exist).
 */
-typedef struct node* Node;
+typedef struct node *Node;
 
+/* A flag to tell if node is representative of a file or directory. */
+enum { DIR, FIL };
 
 /*
    Given a parent Node and a directory string dir, returns a new
    Node structure or NULL if any allocation error occurs in creating
    the node or its fields.
+
+   The node-type will always default to DIR.
 
    The new structure is initialized to have its path as the parent's
    path (if it exists) prefixed to the directory string parameter,
@@ -29,7 +33,42 @@ typedef struct node* Node;
    do not point to any children.
 */
 
-Node Node_create(const char* dir, Node parent);
+/*
+   Given Node n of type FIL, returns the contents of the file.
+*/
+void *Node_getFileContents(Node n);
+
+/*
+   Given Node n of type FIL, replaces the contents with newContents,
+   and updates the length to newLength and returns the old contents.
+   Returns NULL if n is of type DIR or memory allocation error
+*/
+void *Node_replaceFileContents(Node n, void *newContents,
+                               size_t newLength);
+
+/*
+   Given a parent Node and a directory string dir, returns a new
+   Node structure or NULL if any allocation error occurs in creating
+   the node or its fields.
+
+   The new structure is initialized to have its path as the parent's
+   path (if it exists) prefixed to the directory string parameter,
+   separated by a slash. It is also initialized with its parent link
+   as the parent parameter value (but the parent itself is not
+   changed to link to the new Node.  The children links are
+   initialized but do not point to any children.
+*/
+Node Node_create(const char *dir, Node parent);
+
+/*
+  Given an existingNode (which is initially created as a DIR),
+  convert node to FIL and ascribe the given contents and length to
+  the node.
+
+  return the new file-type node if successful.
+  return NULL any allocation error occurs.
+*/
+Node Node_createFile(Node existingNode, void *contents, size_t length);
 
 /*
   Destroys the entire hierarchy of Nodes rooted at n,
@@ -38,7 +77,6 @@ Node Node_create(const char* dir, Node parent);
   Returns the number of Nodes destroyed.
 */
 size_t Node_destroy(Node n);
-
 
 /*
   Compares node1 and node2 based on their paths.
@@ -50,7 +88,7 @@ int Node_compare(Node node1, Node node2);
 /*
    Returns Node n's path.
 */
-const char* Node_getPath(Node n);
+const char *Node_getPath(Node n);
 
 /*
   Returns the number of child directories n has.
@@ -66,7 +104,7 @@ size_t Node_getNumChildren(Node n);
    child's identifier in *childID. If n does not have such a child,
    store the identifier that such a child would have in *childID.
 */
-int Node_hasChild(Node n, const char* path, size_t* childID);
+int Node_hasChild(Node n, const char *path, size_t *childID);
 
 /*
    Returns the child Node of n with identifier childID, if one exists,
@@ -113,7 +151,7 @@ int Node_unlinkChild(Node parent, Node child);
   MEMORY_ERROR if the new Node cannot be created,
   ALREADY_IN_TREE if parent already has a child with that path
 */
-int Node_addChild(Node parent, const char* dir);
+int Node_addChild(Node parent, const char *dir);
 
 /*
   Returns a string representation n, or NULL if there is an allocation
@@ -122,6 +160,16 @@ int Node_addChild(Node parent, const char* dir);
   Allocates memory for the returned string,
   which is then owned by client!
 */
-char* Node_toString(Node n);
+char *Node_toString(Node n);
+
+/*
+  Returns the type of Node n.
+*/
+int Node_getType(Node n);
+
+/*
+  Returns the length of Node n.
+*/
+size_t Node_getLength(Node n);
 
 #endif
