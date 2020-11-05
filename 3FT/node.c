@@ -167,6 +167,11 @@ size_t Node_destroy(Node n) {
       c = DynArray_get(n->children, i);
       count += Node_destroy(c);
    }
+
+   /* Unlink from parent if it has one. */
+   if (Node_getParent(n) != NULL)
+      Node_unlinkChild(Node_getParent(n), n);
+
    DynArray_free(n->children);
 
    free(n->path);
