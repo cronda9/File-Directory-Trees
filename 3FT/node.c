@@ -180,9 +180,9 @@ int Node_compare(Node node1, Node node2) {
       return strcmp(node1->path, node2->path);
 
    /* FILEs are less than DIRs. */
-   if (node1->type == FIL && node2->type == DIR)
-      return 1;
-   return -1;
+   if (node1->type == FIL)
+      return -1;
+   return 1;
 }
 
 /*--------------------------------------------------------------------*/
