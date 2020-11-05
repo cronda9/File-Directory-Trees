@@ -90,11 +90,11 @@ static Node FT_traversePath(char *path) {
    Destroys the entire hierarchy of Nodes rooted at curr,
    including curr itself.
 */
-static void FT_removePathFrom(Node curr) {
+/* static void FT_removePathFrom(Node curr) {
    if (curr != NULL) {
       count -= Node_destroy(curr);
    }
-}
+} */
 
 /*--------------------------------------------------------------------*/
 /*
@@ -384,7 +384,7 @@ void *FT_replaceFileContents(char *path, void *newContents,
   Returns NO_SUCH_PATH if curr is not the Node for path,
   and SUCCESS otherwise.
  */
-static int FT_rmPathAt(char *path, Node curr) {
+/* static int FT_rmPathAt(char *path, Node curr) {
 
    Node parent;
 
@@ -404,7 +404,7 @@ static int FT_rmPathAt(char *path, Node curr) {
       return SUCCESS;
    } else
       return NO_SUCH_PATH;
-}
+} */
 
 /*--------------------------------------------------------------------*/
 int FT_rmDir(char *path) {
@@ -483,7 +483,7 @@ int FT_init(void) {
       return INITIALIZATION_ERROR;
 
    /* Set up AO. */
-   isInitialized = 1;
+   isInitialized = TRUE;
    root = NULL;
    count = 0;
 
@@ -497,9 +497,10 @@ int FT_destroy(void) {
       return INITIALIZATION_ERROR;
 
    /* Destroy tree and reset AO. */
-   FT_removePathFrom(root);
+   if (root != NULL)
+      Node_destroy(root);
    root = NULL;
-   isInitialized = 0;
+   isInitialized = FALSE;
 
    return SUCCESS;
 }
