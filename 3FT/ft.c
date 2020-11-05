@@ -232,7 +232,7 @@ int FT_insertDir(char *path) {
 }
 
 /*--------------------------------------------------------------------*/
-FT_insertFile(char *path, void *contents, size_t length) {
+int FT_insertFile(char *path, void *contents, size_t length) {
    Node curr;
    Node last;
    Node first;
