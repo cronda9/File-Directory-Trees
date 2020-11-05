@@ -427,16 +427,6 @@ int FT_rmDir(char *path) {
       return NOT_A_DIRECTORY;
 
    return FT_rmPathAt(path, curr);
-   /* Check if root, remove accordingly. */
-   if (!strcmp(path, Node_getPath(curr))) {
-      if (Node_getParent(curr) == NULL)
-         root = NULL;
-
-      count -= Node_destroy(curr);
-
-      return SUCCESS;
-   } else
-      return NO_SUCH_PATH;
 }
 
 /*--------------------------------------------------------------------*/
@@ -460,16 +450,6 @@ int FT_rmFile(char *path) {
       return NOT_A_FILE;
 
    return FT_rmPathAt(path, curr);
-   /* Check if root, remove accordingly. */
-   if (!strcmp(path, Node_getPath(curr))) {
-      if (Node_getParent(curr) == NULL)
-         root = NULL;
-
-      count -= Node_destroy(curr);
-
-      return SUCCESS;
-   } else
-      return NO_SUCH_PATH;
 }
 
 /*--------------------------------------------------------------------*/

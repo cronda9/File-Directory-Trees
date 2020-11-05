@@ -150,8 +150,8 @@ size_t Node_destroy(Node n) {
    assert(n != NULL);
 
    /* Unlink from Parent dir if possible. */
-   if ((n->parent) != NULL)
-      Node_unlinkChild((n->parent), n);
+   /* if ((n->parent) != NULL)
+      Node_unlinkChild((n->parent), n); */
 
    /* Handle FIL type. */
    if (n->type == FIL) {
