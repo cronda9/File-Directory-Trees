@@ -302,7 +302,7 @@ int Node_linkChild(Node parent, Node child) {
 
 /*--------------------------------------------------------------------*/
 int Node_unlinkChild(Node parent, Node child) {
-   size_t i=0;
+   size_t i = 0;
 
    assert(parent != NULL);
    assert(child != NULL);

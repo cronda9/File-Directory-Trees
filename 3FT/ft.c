@@ -236,8 +236,8 @@ int FT_insertDir(char *path) {
 /*--------------------------------------------------------------------*/
 int FT_insertFile(char *path, void *contents, size_t length) {
    Node curr;
-   Node last;
-   Node first;
+   Node last = NULL;
+   Node first = NULL;
    int result;
 
    assert(path != NULL);
@@ -262,7 +262,7 @@ int FT_insertFile(char *path, void *contents, size_t length) {
    /* Update final Node to the FIL type and associated data. */
    if (Node_createFile(last, contents, length) == NULL) {
       Node_unlinkChild(curr, first);
-      Node_destroy(first);
+      (void)Node_destroy(first);
       return MEMORY_ERROR;
    }
 
@@ -500,7 +500,7 @@ int FT_destroy(void) {
 
    /* Destroy tree and reset AO. */
    if (root != NULL)
-      Node_destroy(root);
+      (void)Node_destroy(root);
    root = NULL;
    isInitialized = FALSE;
 
