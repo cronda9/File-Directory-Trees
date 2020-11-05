@@ -127,9 +127,7 @@ Node Node_create(const char *dir, Node parent) {
 }
 
 /*--------------------------------------------------------------------*/
-Node Node_createFile(Node existingNode, void *contents, size_t length) {
-   int result;
-   
+Node Node_createFile(Node existingNode, void *contents, size_t length) {   
    assert(existingNode != NULL);
 
    /* Allocates memory for size of new contents */
