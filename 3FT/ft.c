@@ -129,7 +129,9 @@ static int FT_linkParentToChild(Node parent, Node child) {
    If there is an error linking any of the new nodes,
    returns PARENT_CHID_ERROR
 
-   Otherwise, returns SUCCESS
+   Otherwise, returns SUCCESS and sets the memory address of first to
+   the first node inserted, and the memory address of last to the last
+   inserted node of the prefix
 */
 static int FT_insertRestOfPath(char *path, Node parent, Node *first,
                                Node *last) {
@@ -554,7 +556,6 @@ static void FT_strcatAccumulate(char *str, char *acc) {
 
 int FT_stat(char *path, boolean *type, size_t *length) {
    Node curr;
-   int t;
 
    assert(path != NULL);
 
@@ -568,12 +569,13 @@ int FT_stat(char *path, boolean *type, size_t *length) {
    if (curr == NULL)
       return NO_SUCH_PATH;
 
-   t = Node_getType(curr);
-   if (t == DIR) {
+   /* Handles directory nodes */
+   if (Node_getType(curr) == DIR) {
       *type = FALSE;
       return SUCCESS;
    }
 
+   /* Handles file nodes */
    *type = TRUE;
    *length = Node_getLength(curr);
    return SUCCESS;

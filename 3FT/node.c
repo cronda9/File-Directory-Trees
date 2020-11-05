@@ -13,9 +13,9 @@
 
 /*--------------------------------------------------------------------*/
 /*
-   A node structure represents a node in a file directory tree. The node
-   can be either of type FIL which has associated contents and length
-   but no children or of type DIR which has associated children Nodes.
+  A node structure represents a node in a file directory tree. The node
+  can be either of type FIL which has associated contents and length
+  but no children or of type DIR which has associated children Nodes.
 */
 struct node {
    /* The full path of this node (FIL or DIR). */
@@ -128,16 +128,23 @@ Node Node_create(const char *dir, Node parent) {
 
 /*--------------------------------------------------------------------*/
 Node Node_createFile(Node existingNode, void *contents, size_t length) {
-
+   int result;
+   
    assert(existingNode != NULL);
 
    /* Allocates memory for size of new contents */
    existingNode->contents = contents;
    existingNode->type = FIL;
    existingNode->length = length;
-
+   
    DynArray_free(existingNode->children);
 
+   if(existingNode->parent != NULL)
+   {
+      DynArray_sort(existingNode->parent->children,
+                    (int (*)(const void *, const void *))Node_compare);
+                    
+   }
    return existingNode;
 }
 
@@ -182,8 +189,8 @@ int Node_compare(Node node1, Node node2) {
 
    /* FILEs are less than DIRs. */
    if (node1->type == FIL)
-      return 1;
-   return -1;
+      return -1;
+   return 1;
 }
 
 /*--------------------------------------------------------------------*/
@@ -221,8 +228,8 @@ int Node_hasChild(Node n, const char *path, size_t *childID) {
    if (checker == NULL)
       return -1;
    result = DynArray_bsearch(
-       n->children, checker, &index,
-       (int (*)(const void *, const void *))Node_compare);
+      n->children, checker, &index,
+      (int (*)(const void *, const void *))Node_compare);
    (void)Node_destroy(checker);
 
    if (childID != NULL)
@@ -285,8 +292,8 @@ int Node_linkChild(Node parent, Node child) {
    child->parent = parent;
 
    if (DynArray_bsearch(
-           parent->children, child, &i,
-           (int (*)(const void *, const void *))Node_compare) == 1)
+          parent->children, child, &i,
+          (int (*)(const void *, const void *))Node_compare) == 1)
       return ALREADY_IN_TREE;
 
    if (DynArray_addAt(parent->children, i, child) == TRUE)
@@ -304,8 +311,8 @@ int Node_unlinkChild(Node parent, Node child) {
 
    /* Find node. */
    if (DynArray_bsearch(
-           parent->children, child, &i,
-           (int (*)(const void *, const void *))Node_compare) == 0)
+          parent->children, child, &i,
+          (int (*)(const void *, const void *))Node_compare) == 0)
       return PARENT_CHILD_ERROR;
 
    /* Remove it. */
