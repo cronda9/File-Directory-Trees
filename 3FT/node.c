@@ -11,6 +11,7 @@
 #include "dynarray.h"
 #include "node.h"
 
+/*--------------------------------------------------------------------*/
 /*
    A node structure represents a node in a file directory tree. The node
    can be either of type FIL which has associated contents and length
@@ -181,8 +182,8 @@ int Node_compare(Node node1, Node node2) {
 
    /* FILEs are less than DIRs. */
    if (node1->type == FIL)
-      return -1;
-   return 1;
+      return 1;
+   return -1;
 }
 
 /*--------------------------------------------------------------------*/

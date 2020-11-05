@@ -1,0 +1,1 @@
+Assertion failed: (DynArray_isValid(oDynArray)), function DynArray_getLength, file dynarray.c, line 121.

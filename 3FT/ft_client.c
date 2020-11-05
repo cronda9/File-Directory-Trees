@@ -134,6 +134,7 @@ int main(void) {
   assert(FT_stat("A", &b, &l) == SUCCESS);
   assert(b == TRUE);
   assert(l == 1000);
+  free(FT_getFileContents("A"));
   assert(FT_rmFile("A") == SUCCESS);
   assert(FT_insertDir("a/z") == SUCCESS);
   assert(FT_stat("a/z", &b, &l) == SUCCESS);
