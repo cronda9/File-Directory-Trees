@@ -211,7 +211,7 @@ size_t Node_getNumChildren(Node n) {
 
 /*--------------------------------------------------------------------*/
 int Node_hasChild(Node n, const char *path, size_t *childID) {
-   size_t index;
+   size_t index=0;
    int result;
    Node checker;
 
@@ -302,7 +302,7 @@ int Node_linkChild(Node parent, Node child) {
 
 /*--------------------------------------------------------------------*/
 int Node_unlinkChild(Node parent, Node child) {
-   size_t i;
+   size_t i=0;
 
    assert(parent != NULL);
    assert(child != NULL);
