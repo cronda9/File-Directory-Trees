@@ -1,121 +1,16 @@
-+break 40
-Breakpoint 1 at 0x4028b4: file bdt_client.c, line 40.
-+n
-The program is not being run.
 +run
-Starting program: /u/cronda/Assignment4/1BDT/bdtBad5 
+Starting program: /u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdtBad5 
 
 Program received signal SIGABRT, Aborted.
 0x0000ffffbe5f50e8 in raise () from /lib64/libc.so.6
 Missing separate debuginfos, use: debuginfo-install glibc-2.17-222.sd7.aarch64
-+delete
-Delete all breakpoints? (y or n) +break 20
-Breakpoint 2 at 0x40274c: file bdt_client.c, line 20.
-+run
-The program being debugged has been started already.
-Start it from the beginning? (y or n) Starting program: /u/cronda/Assignment4/1BDT/bdtBad5 
-
-Breakpoint 2, main () at bdt_client.c:22
-/u/cronda/Assignment4/1BDT/bdt_client.c:22:814:beg:0x40274c
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:23:873:beg:0x402780
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:24:919:beg:0x4027b4
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:29:1143:beg:0x4027e8
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:30:1176:beg:0x402814
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:31:1222:beg:0x402848
-+n
-
-Program received signal SIGABRT, Aborted.
-0x0000ffffbe5f50e8 in raise () from /lib64/libc.so.6
-+s
-Single stepping until exit from function raise,
-which has no line number information.
-
-Program terminated with signal SIGABRT, Aborted.
-The program no longer exists.
-+delete
-Delete all breakpoints? (y or n) +break 29
-Breakpoint 3 at 0x4027e8: file bdt_client.c, line 29.
-+run
-Starting program: /u/cronda/Assignment4/1BDT/bdtBad5 
-
-Breakpoint 3, main () at bdt_client.c:29
-/u/cronda/Assignment4/1BDT/bdt_client.c:29:1143:beg:0x4027e8
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:30:1176:beg:0x402814
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:31:1222:beg:0x402848
-+s
-BDT_toString () at bdtBad5.c:467
-/u/cos217/Assignment4/bdtBad5.c:467:11643:beg:0x402680
-+n
-/u/cos217/Assignment4/bdtBad5.c:468:11694:beg:0x402688
-+n
-/u/cos217/Assignment4/bdtBad5.c:470:11719:beg:0x40268c
-+n
-/u/cos217/Assignment4/bdtBad5.c:473:11761:beg:0x4026a8
-+n
-/u/cos217/Assignment4/bdtBad5.c:474:11795:beg:0x4026c0
-+n
-/u/cos217/Assignment4/bdtBad5.c:476:11845:beg:0x4026d8
-+s
-DynArray_map (oDynArray=0x430010, pfApply=0x402544 <BDT_strlenAccumulate>, pvExtra=0xfffffffff098) at dynarray.c:246
-/u/cronda/Assignment4/1BDT/dynarray.c:246:6201:beg:0x40134c
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:247:6231:beg:0x401378
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:248:6259:beg:0x4013a4
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:250:6300:beg:0x4013d4
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:251:6344:beg:0x4013dc
-+s
-BDT_strlenAccumulate (str=0x0, pAcc=0xfffffffff098) at bdtBad5.c:440
-/u/cos217/Assignment4/bdtBad5.c:440:10873:beg:0x402558
-+n
-
-Program received signal SIGABRT, Aborted.
-0x0000ffffbe5f50e8 in raise () from /lib64/libc.so.6
-+run
-The program being debugged has been started already.
-Start it from the beginning? (y or n) Starting program: /u/cronda/Assignment4/1BDT/bdtBad5 
-
-Breakpoint 3, main () at bdt_client.c:29
-/u/cronda/Assignment4/1BDT/bdt_client.c:29:1143:beg:0x4027e8
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:30:1176:beg:0x402814
-+n
-/u/cronda/Assignment4/1BDT/bdt_client.c:31:1222:beg:0x402848
-+s
-BDT_toString () at bdtBad5.c:467
-/u/cos217/Assignment4/bdtBad5.c:467:11643:beg:0x402680
-+n
-/u/cos217/Assignment4/bdtBad5.c:468:11694:beg:0x402688
-+n
-/u/cos217/Assignment4/bdtBad5.c:470:11719:beg:0x40268c
-+n
-/u/cos217/Assignment4/bdtBad5.c:473:11761:beg:0x4026a8
-+n
-/u/cos217/Assignment4/bdtBad5.c:474:11795:beg:0x4026c0
-+n
-/u/cos217/Assignment4/bdtBad5.c:476:11845:beg:0x4026d8
-+s
-DynArray_map (oDynArray=0x430010, pfApply=0x402544 <BDT_strlenAccumulate>, pvExtra=0xfffffffff098) at dynarray.c:246
-/u/cronda/Assignment4/1BDT/dynarray.c:246:6201:beg:0x40134c
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:247:6231:beg:0x401378
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:248:6259:beg:0x4013a4
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:250:6300:beg:0x4013d4
-+n
-/u/cronda/Assignment4/1BDT/dynarray.c:251:6344:beg:0x4013dc
-+s
-BDT_strlenAccumulate (str=0x0, pAcc=0xfffffffff098) at bdtBad5.c:440
-/u/cos217/Assignment4/bdtBad5.c:440:10873:beg:0x402558
-+print(str)
-$1 = 0x0
++where
+#0  0x0000ffffbe5f50e8 in raise () from /lib64/libc.so.6
+#1  0x0000ffffbe5f6760 in abort () from /lib64/libc.so.6
+#2  0x0000ffffbe5ee5dc in __assert_fail_base () from /lib64/libc.so.6
+#3  0x0000ffffbe5ee694 in __assert_fail () from /lib64/libc.so.6
+#4  0x0000000000402584 in BDT_strlenAccumulate (str=0x0, pAcc=0xfffffffff038) at bdtBad5.c:440
+#5  0x0000000000401400 in DynArray_map (oDynArray=0x430010, pfApply=0x402544 <BDT_strlenAccumulate>, pvExtra=0xfffffffff038) at dynarray.c:251
+#6  0x00000000004026ec in BDT_toString () at bdtBad5.c:476
+#7  0x000000000040284c in main () at bdt_client.c:31
++stop

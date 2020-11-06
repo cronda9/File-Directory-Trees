@@ -79,6 +79,8 @@ static boolean Checker_treeCheck(Node n, size_t* cnt) {
    size_t c;
    assert(cnt);
 
+   assert(cnt != NULL);
+   
    if(n != NULL) {
 
       /* Increment num of nodes found */
