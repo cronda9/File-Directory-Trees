@@ -65,69 +65,6 @@ static Node FT_traversePathFrom(char *path, Node curr) {
 
 /*--------------------------------------------------------------------*/
 /*
-   Starting at the parameter curr, traverses as far down
-   the hierarchy as possible while still matching the path
-   parameter.
-
-   Returns a pointer to the farthest matching Node down that path,
-   or NULL if there is no node in curr's hierarchy that matches
-   a prefix of the path or a mem allocation error.
-*/
-/* static Node FT_traversePath(char *path) {
-   Node curr = root;
-   int result;
-   size_t child;
-   char *restPath = path;
-   char *copyPath;
-   char *currPath;
-   char *dirToken;
-
-   assert(path != NULL); */
-
-/* Root Failure. */
-/*    if (root == NULL)
-      return NULL; */
-
-/* Check if file is at root. */
-/*    if (Node_getType(root) == FIL) {
-      if (strcmp(path, Node_getPath(root)) != EQUAL)
-         return NULL;
-      return root;
-   }
-
-   if (strcmp(path, Node_getPath(curr)) == EQUAL)
-      return curr;
-
-   restPath += (strlen(Node_getPath(curr)) + 1); */
-
-/* Set up tokenizing for traversing path. */
-/*    copyPath = malloc(strlen(restPath) + 1);
-   if (copyPath == NULL)
-      return NULL;
-   currPath = malloc(strlen(path) + 1);
-   if (currPath == NULL)
-      return NULL;
-   strcpy(copyPath, restPath);
-   dirToken = strtok(copyPath, "/");
-   strcpy(currPath, Node_getPath(curr));
-
-   while (dirToken != NULL) {
-      strcat(currPath, "/");
-      strcat(currPath, dirToken);
-      result = Node_hasChild(curr, currPath, &child);
-      if (result == FALSE) {
-         return curr;
-      }
-      if (result == -1)
-         return NULL;
-      curr = Node_getChild(curr, child);
-      dirToken = strtok(NULL, "/");
-   }
-   return curr;
-} */
-
-/*--------------------------------------------------------------------*/
-/*
    Returns the farthest Node reachable from the root following a given
    path, or NULL if there is no Node in the hierarchy that matches a
    prefix of the path.
@@ -171,8 +108,9 @@ static int FT_linkParentToChild(Node parent, Node child) {
 
 /*--------------------------------------------------------------------*/
 /*
-   Inserts a new path into the tree rooted at parent, or, if
-   parent is NULL, as the root of the data structure.
+   Inserts a new path terminating at the given Node last into the tree
+   rooted at parent. If parent is NULL, insert as the root of the data
+   structure whether it be a FIL or DIR type Node.
 
    If a Node representing path already exists, returns ALREADY_IN_TREE
 
@@ -182,9 +120,7 @@ static int FT_linkParentToChild(Node parent, Node child) {
    If there is an error linking any of the new nodes,
    returns PARENT_CHID_ERROR
 
-   Otherwise, returns SUCCESS and sets the memory address of first to
-   the first node inserted, and the memory address of last to the last
-   inserted node of the prefix
+   Otherwise, returns SUCCESS.
 */
 static int FT_insertRestOfPath(char *path, Node parent, Node last) {
 
@@ -573,33 +509,6 @@ static size_t FT_preOrderTraversal(Node n, DynArray_T d, size_t i) {
 }
 
 /*--------------------------------------------------------------------*/
-/*
-   Alternate version of strlen that uses pAcc as an in-out parameter
-   to accumulate a string length, rather than returning the length of
-   str, and also always adds one more in addition to str's length.
-*/
-static void FT_strlenAccumulate(char *str, size_t *pAcc) {
-   assert(pAcc != NULL);
-
-   if (str != NULL)
-      *pAcc += (strlen(str) + 1);
-}
-
-/*--------------------------------------------------------------------*/
-/*
-   Alternate version of strcat that inverts the typical argument
-   order, appending str onto acc, and also always adds a newline at
-   the end of the concatenated string.
-*/
-static void FT_strcatAccumulate(char *str, char *acc) {
-   assert(acc != NULL);
-
-   if (str != NULL)
-      strcat(acc, str);
-   strcat(acc, "\n");
-}
-
-/*--------------------------------------------------------------------*/
 int FT_stat(char *path, boolean *type, size_t *length) {
    Node curr;
 
@@ -630,6 +539,8 @@ int FT_stat(char *path, boolean *type, size_t *length) {
 /*--------------------------------------------------------------------*/
 char *FT_toString(void) {
    DynArray_T nodes;
+   size_t i;
+   char *tmp;
    size_t totalStrlen = 1;
    char *result = NULL;
 
@@ -639,8 +550,12 @@ char *FT_toString(void) {
    nodes = DynArray_new(count);
    (void)FT_preOrderTraversal(root, nodes, 0);
 
-   DynArray_map(nodes, (void (*)(void *, void *))FT_strlenAccumulate,
-                (void *)&totalStrlen);
+   /* Don't use map() as too many funcs - get total strlen needed. */
+   for (i = 0; i < DynArray_getLength(nodes); i++) {
+      tmp = DynArray_get(nodes, i);
+      if (tmp != NULL)
+         totalStrlen += (strlen(tmp) + 1);
+   }
 
    result = malloc(totalStrlen);
    if (result == NULL) {
@@ -649,8 +564,13 @@ char *FT_toString(void) {
    }
    *result = '\0';
 
-   DynArray_map(nodes, (void (*)(void *, void *))FT_strcatAccumulate,
-                (void *)result);
+   /* Concatenate all together. */
+   for (i = 0; i < DynArray_getLength(nodes); i++) {
+      tmp = DynArray_get(nodes, i);
+      if (tmp != NULL)
+         strcat(result, tmp);
+      strcat(result, "\n");
+   }
 
    DynArray_free(nodes);
 

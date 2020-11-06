@@ -184,7 +184,12 @@ size_t Node_destroy(Node n) {
 }
 
 /*--------------------------------------------------------------------*/
-int Node_compare(Node node1, Node node2) {
+/*
+  Compares node1 and node2 based on their paths.
+  Returns <0, 0, or >0 if node1 is less than,
+  equal to, or greater than node2, respectively.
+*/
+static int Node_compare(Node node1, Node node2) {
    assert(node1 != NULL);
    assert(node2 != NULL);
 
@@ -217,7 +222,16 @@ size_t Node_getNumChildren(Node n) {
 }
 
 /*--------------------------------------------------------------------*/
-int Node_hasChild(Node n, const char *path, size_t *childID) {
+/*
+   Returns 1 if n has a child (FIL or DIR) with path,
+   0 if it does not have such a child, and -1 if
+   there is an allocation error during search.
+
+   If n does have such a child, and childID is not NULL, store the
+   child's identifier in *childID. If n does not have such a child,
+   store the identifier that such a child would have in *childID.
+*/
+static int Node_hasChild(Node n, const char *path, size_t *childID) {
    size_t index = 0;
    int result;
    Node checker;
@@ -323,42 +337,6 @@ int Node_unlinkChild(Node parent, Node child) {
    /* Remove it. */
    (void)DynArray_removeAt(parent->children, i);
    return SUCCESS;
-}
-
-/*--------------------------------------------------------------------*/
-int Node_addChild(Node parent, const char *dir) {
-   Node new;
-   int result;
-
-   assert(parent != NULL);
-   assert(dir != NULL);
-
-   /* FILEs cannot have children. */
-   if (parent->type == FIL)
-      return NOT_A_DIRECTORY;
-
-   new = Node_createDir(dir, parent);
-   if (new == NULL)
-      return MEMORY_ERROR;
-
-   result = Node_linkChild(parent, new);
-   if (result != SUCCESS)
-      (void)Node_destroy(new);
-
-   return result;
-}
-
-/*--------------------------------------------------------------------*/
-char *Node_toString(Node n) {
-   char *copyPath;
-
-   assert(n != NULL);
-
-   copyPath = malloc(strlen(n->path) + 1);
-   if (copyPath == NULL)
-      return NULL;
-   else
-      return strcpy(copyPath, n->path);
 }
 
 /*--------------------------------------------------------------------*/

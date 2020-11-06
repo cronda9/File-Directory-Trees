@@ -126,13 +126,10 @@ For bdtBad4, you do not have to find the bug. Instead, indicate what
 is different about trying to debug this executable in gdb versus the
 other three:
 
-It is difficult to debug with gdb because you are getting some weird
-character error. We can pin down which sections it's probably happening
-in but not exactly what function is causing it. From the looks of it
-it seems to be garbage memory values which could not have been
-initialized in a number of places. Finding exactly where this is is a 
-different process than the run until break strategy used in the last
-three.
+It is a little different to debug because nothing crashes and you
+just have some garbage mixed in with your output. So you actually have
+to try and determine what went wrong use breaks, printing and other
+methods available to you in gdb.
 
 For bdtBad5, you do not have to find the bug. Instead, indicate one
 hypothesis for how the program could crash within the DynArray module,
@@ -141,7 +138,8 @@ which we promise is itself correct:
 There may not be any nodes within the DynArray ADT when we call map() so
 the callback function will fail it's assertion. Essentially, either the
 BDT is empty or the PreOrderTraversal isn't storing the nodes into the 
-nodes DynArray properly so it fails to map to non-null values.
+nodes DynArray properly so it fails to map to non-null values or the
+dynArray is being sized to big at the beginning.
 
 ------------------------------------------------------------------------
 What are your critiques of the given DT implementations, as
@@ -151,7 +149,7 @@ The main things we noticed were that Node has a lot of bloat and
 unnecessary functions exposed in the interface. For instance,
 Node_hasChild and Node_Compare are only used in the node.c and never
 by dt.c therefore they should be made static. As for Node_addChild,
-it is never used by either DT or the Node implemenation so it should be
+it is never used by either DT or the Node implementation so it should be
 removed.
 
 Note: Ask about it

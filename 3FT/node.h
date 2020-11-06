@@ -11,33 +11,22 @@
 
 /*
    a Node is an object that contains a path payload and references to
-   the Node's parent (if it exists) and children (if they exist).
+   the Node's parent (if it exists), children (if DIR and they exist) as
+   well as file contents and length (if FIL type and it exists).
 */
 typedef struct node *Node;
 
+/*--------------------------------------------------------------------*/
 /* A flag to tell if node is representative of a file or directory. */
 enum { DIR, FIL };
 
-/*
-   Given a parent Node and a directory string dir, returns a new
-   Node structure or NULL if any allocation error occurs in creating
-   the node or its fields.
-
-   The node-type will always default to DIR.
-
-   The new structure is initialized to have its path as the parent's
-   path (if it exists) prefixed to the directory string parameter,
-   separated by a slash. It is also initialized with its parent link
-   as the parent parameter value (but the parent itself is not changed
-   to link to the new Node.  The children links are initialized but
-   do not point to any children.
-*/
-
+/*--------------------------------------------------------------------*/
 /*
    Given Node n of type FIL, returns the contents of the file.
 */
 void *Node_getFileContents(Node n);
 
+/*--------------------------------------------------------------------*/
 /*
    Given Node n of type FIL, replaces the contents with newContents,
    and updates the length to newLength and returns the old contents.
@@ -46,30 +35,32 @@ void *Node_getFileContents(Node n);
 void *Node_replaceFileContents(Node n, void *newContents,
                                size_t newLength);
 
+/*--------------------------------------------------------------------*/
 /*
    Given a parent Node and a directory string dir, returns a new
-   Node structure or NULL if any allocation error occurs in creating
-   the node or its fields.
+   Node DIR type structure or NULL if any allocation error occurs in
+   creating the node or its fields.
 
    The new structure is initialized to have its path as the parent's
    path (if it exists) prefixed to the directory string parameter,
    separated by a slash. It is also initialized with its parent link
-   as the parent parameter value (but the parent itself is not
-   changed to link to the new Node.  The children links are
+   (ig parent is given) as the parent parameter value (but the parent
+   itself is not changed to link to the new Node. The children links are
    initialized but do not point to any children.
 */
 Node Node_createDir(const char *dir, Node parent);
 
+/*--------------------------------------------------------------------*/
 /*
-  Given an existingNode (which is initially created as a DIR),
-  convert node to FIL and ascribe the given contents and length to
-  the node.
+  Given a path to a file, creates a FIL Node structure with associated
+  file contents and length metadata. No links to parent node are made.
 
   return the new file-type node if successful.
   return NULL any allocation error occurs.
 */
 Node Node_createFile(char *path, void *contents, size_t length);
 
+/*--------------------------------------------------------------------*/
 /*
   Destroys the entire hierarchy of Nodes rooted at n,
   including n itself.
@@ -78,45 +69,32 @@ Node Node_createFile(char *path, void *contents, size_t length);
 */
 size_t Node_destroy(Node n);
 
-/*
-  Compares node1 and node2 based on their paths.
-  Returns <0, 0, or >0 if node1 is less than,
-  equal to, or greater than node2, respectively.
-*/
-int Node_compare(Node node1, Node node2);
-
+/*--------------------------------------------------------------------*/
 /*
    Returns Node n's path.
 */
 const char *Node_getPath(Node n);
 
+/*--------------------------------------------------------------------*/
 /*
-  Returns the number of child directories n has.
+  Returns the number of children (FIL or DIR) n has.
 */
 size_t Node_getNumChildren(Node n);
 
-/*
-   Returns 1 if n has a child directory with path,
-   0 if it does not have such a child, and -1 if
-   there is an allocation error during search.
-
-   If n does have such a child, and childID is not NULL, store the
-   child's identifier in *childID. If n does not have such a child,
-   store the identifier that such a child would have in *childID.
-*/
-int Node_hasChild(Node n, const char *path, size_t *childID);
-
+/*--------------------------------------------------------------------*/
 /*
    Returns the child Node of n with identifier childID, if one exists,
    otherwise returns NULL.
 */
 Node Node_getChild(Node n, size_t childID);
 
+/*--------------------------------------------------------------------*/
 /*
    Returns the parent Node of n, if it exists, otherwise returns NULL
 */
 Node Node_getParent(Node n);
 
+/*--------------------------------------------------------------------*/
 /*
   Makes child a child of parent, if possible, and returns SUCCESS.
   This is not possible in the following cases:
@@ -129,6 +107,7 @@ Node Node_getParent(Node n);
  */
 int Node_linkChild(Node parent, Node child);
 
+/*--------------------------------------------------------------------*/
 /*
   Unlinks Node parent from its child Node child, leaving the
   child Node unchanged.
@@ -138,35 +117,13 @@ int Node_linkChild(Node parent, Node child);
  */
 int Node_unlinkChild(Node parent, Node child);
 
+/*--------------------------------------------------------------------*/
 /*
-  Creates a new Node such that the new Node's path is dir appended to
-  n's path, separated by a slash, and that the new Node has no
-  children of its own. The new node's parent is n, and the new node is
-  added as a child of n.
-
-  (Reiterating for clarity: unlike with Node_createDir, parent *is*
-  changed so that the link is bidirectional.)
-
-  Returns SUCCESS upon completion, or:
-  MEMORY_ERROR if the new Node cannot be created,
-  ALREADY_IN_TREE if parent already has a child with that path
-*/
-int Node_addChild(Node parent, const char *dir);
-
-/*
-  Returns a string representation n, or NULL if there is an allocation
-  error.
-
-  Allocates memory for the returned string,
-  which is then owned by client!
-*/
-char *Node_toString(Node n);
-
-/*
-  Returns the type of Node n.
+  Returns the type of Node n. DIR or FIL
 */
 int Node_getType(Node n);
 
+/*--------------------------------------------------------------------*/
 /*
   Returns the length of Node n.
 */
