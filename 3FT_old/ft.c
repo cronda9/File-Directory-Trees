@@ -36,9 +36,9 @@ static size_t count;
    Starting at the parameter curr, traverses as far down the hierarchy
    as possible while still matching the path parameter.
 
-   Returns a pointer to the farthest matching DirNode down that path, or
+   Returns a pointer to the farthest matching Node down that path, or
    NULL if there is no node in curr's hierarchy that matches a prefix of
-   the path
+   the path.
 */
 static DirNode FT_traversePathFrom(char *path, DirNode curr) {
    DirNode found;
@@ -82,7 +82,7 @@ static DirNode FT_traversePath(char *path) {
 /*--------------------------------------------------------------------*/
 /*
    Returns FileNode that with the correct path, or returns NULL if a
-   file with that path does not exist
+   file with that path does not exist.
 */
 static FileNode FT_traversePathToFile(char *path) {
    size_t file;
@@ -95,10 +95,9 @@ static FileNode FT_traversePathToFile(char *path) {
 
    /* Gets dirNode located at the prefix of path */
    parent = FT_traversePath(path);
-   if (parent == NULL) {
-      fprintf(stderr, "parent fails");
+   if (parent == NULL) 
       return NULL;
-   }
+   
    /* Finds fileChild of parent dirNode that has the appropriate path */
    if (DirNode_hasFileChild(parent, path, &file))
       return DirNode_getFileChild(parent, file);
@@ -664,7 +663,6 @@ static size_t FT_preOrderTraversal(DirNode n, DynArray_T d, size_t i) {
 static void FT_strlenAccumulate(char *str, size_t *pAcc) {
    assert(pAcc != NULL);
 
-   fprintf(stderr, "on path.. %s\n", str);
    if (str != NULL)
       *pAcc += (strlen(str) + 1);
 }
