@@ -78,6 +78,8 @@ boolean Checker_Node_isValid(Node n) {
 static boolean Checker_treeCheck(Node n, size_t* cnt) {
    size_t c;
 
+   assert(cnt != NULL);
+   
    if(n != NULL) {
 
       /* Increment num of nodes found */
