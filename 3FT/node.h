@@ -58,7 +58,7 @@ void *Node_replaceFileContents(Node n, void *newContents,
    changed to link to the new Node.  The children links are
    initialized but do not point to any children.
 */
-Node Node_create(const char *dir, Node parent);
+Node Node_createDir(const char *dir, Node parent);
 
 /*
   Given an existingNode (which is initially created as a DIR),
@@ -68,7 +68,7 @@ Node Node_create(const char *dir, Node parent);
   return the new file-type node if successful.
   return NULL any allocation error occurs.
 */
-Node Node_createFile(Node existingNode, void *contents, size_t length);
+Node Node_createFile(char *path, void *contents, size_t length);
 
 /*
   Destroys the entire hierarchy of Nodes rooted at n,
@@ -144,7 +144,7 @@ int Node_unlinkChild(Node parent, Node child);
   children of its own. The new node's parent is n, and the new node is
   added as a child of n.
 
-  (Reiterating for clarity: unlike with Node_create, parent *is*
+  (Reiterating for clarity: unlike with Node_createDir, parent *is*
   changed so that the link is bidirectional.)
 
   Returns SUCCESS upon completion, or:

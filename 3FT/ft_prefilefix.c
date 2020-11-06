@@ -84,11 +84,11 @@ static Node FT_traversePathFrom(char *path, Node curr) {
 
    assert(path != NULL); */
 
-/* Root Failure. */
+   /* Root Failure. */
 /*    if (root == NULL)
       return NULL; */
 
-/* Check if file is at root. */
+   /* Check if file is at root. */
 /*    if (Node_getType(root) == FIL) {
       if (strcmp(path, Node_getPath(root)) != EQUAL)
          return NULL;
@@ -100,7 +100,7 @@ static Node FT_traversePathFrom(char *path, Node curr) {
 
    restPath += (strlen(Node_getPath(curr)) + 1); */
 
-/* Set up tokenizing for traversing path. */
+   /* Set up tokenizing for traversing path. */
 /*    copyPath = malloc(strlen(restPath) + 1);
    if (copyPath == NULL)
       return NULL;
@@ -149,6 +149,16 @@ static Node FT_traversePath(char *path) {
    return FT_traversePathFrom(path, root);
 }
 
+/*
+   Destroys the entire hierarchy of Nodes rooted at curr,
+   including curr itself.
+*/
+/* static void FT_removePathFrom(Node curr) {
+   if (curr != NULL) {
+      count -= Node_destroy(curr);
+   }
+} */
+
 /*--------------------------------------------------------------------*/
 /*
    Given a prospective parent and child Node,
@@ -186,7 +196,8 @@ static int FT_linkParentToChild(Node parent, Node child) {
    the first node inserted, and the memory address of last to the last
    inserted node of the prefix
 */
-static int FT_insertRestOfPath(char *path, Node parent, Node last) {
+static int FT_insertRestOfPath(char *path, Node parent, Node *first,
+                               Node *last) {
 
    Node curr = parent;
    Node firstNew = NULL;
@@ -194,19 +205,10 @@ static int FT_insertRestOfPath(char *path, Node parent, Node last) {
    char *copyPath;
    char *restPath = path;
    char *dirToken;
-   char *nextToken;
    int result;
    size_t newCount = 0;
 
    assert(path != NULL);
-   assert(last != NULL);
-
-   /* Test if need to root at a file. */
-   if ((root == NULL) && (Node_getType(last) == FIL)) {
-      count++;
-      root = last;
-      return SUCCESS;
-   }
 
    /* Test root case and if already exists or get rest of path. */
    if (curr == NULL) {
@@ -228,8 +230,8 @@ static int FT_insertRestOfPath(char *path, Node parent, Node last) {
    dirToken = strtok(copyPath, "/");
 
    /* Create necessary new nodes and link. */
-   while ((nextToken = strtok(NULL, "/")) != NULL) {
-      new = Node_createDir(dirToken, curr);
+   while (dirToken != NULL) {
+      new = Node_create(dirToken, curr);
       newCount++;
 
       /* Test if first in chain or link successively. */
@@ -252,26 +254,15 @@ static int FT_insertRestOfPath(char *path, Node parent, Node last) {
       }
 
       curr = new;
-      dirToken = nextToken;
+      dirToken = strtok(NULL, "/");
    }
 
-   /* Insert last node. */
-   newCount++;
-   result = FT_linkParentToChild(curr, last);
-   if (result != SUCCESS) {
-      (void)Node_destroy(last);
-      (void)Node_destroy(firstNew);
-      free(copyPath);
-      return result;
+   /* If requested: set last mem to last and first inserted nodes. */
+   if ((last != NULL) && (first != NULL)) {
+      *last = curr;
+      *first = firstNew;
    }
    free(copyPath);
-
-   /* See if this is the first insert. */
-   if (firstNew == NULL) {
-      firstNew = last;
-      count += newCount;
-      return SUCCESS;
-   }
 
    /* Finish linking process to given prefix. */
    if (parent == NULL) {
@@ -292,7 +283,6 @@ static int FT_insertRestOfPath(char *path, Node parent, Node last) {
 /*--------------------------------------------------------------------*/
 int FT_insertDir(char *path) {
    Node curr;
-   Node farthestNew;
 
    assert(path != NULL);
 
@@ -302,19 +292,15 @@ int FT_insertDir(char *path) {
    /* Go down as far as possible on prefix. */
    curr = FT_traversePath(path);
 
-   /* Create final dir node to insert. */
-   farthestNew = Node_createDir(path, NULL);
-   if (farthestNew == NULL)
-      return MEMORY_ERROR;
-
    /* Insert the directory and all other paths not in tree. */
-   return FT_insertRestOfPath(path, curr, farthestNew);
+   return FT_insertRestOfPath(path, curr, NULL, NULL);
 }
 
 /*--------------------------------------------------------------------*/
 int FT_insertFile(char *path, void *contents, size_t length) {
    Node curr;
-   Node farthestNew;
+   Node last = NULL;
+   Node first = NULL;
    int result;
 
    assert(path != NULL);
@@ -325,20 +311,22 @@ int FT_insertFile(char *path, void *contents, size_t length) {
    /* Go down as far as possible on prefix. */
    curr = FT_traversePath(path);
 
-   /* Create final file node to insert. */
-   farthestNew = Node_createFile(path, contents, length);
-   if (farthestNew == NULL)
-      return MEMORY_ERROR;
-
    /* Test if it's parent is a file. */
    if ((curr != NULL) && (Node_getType(curr) == FIL) &&
        (strcmp(path, Node_getPath(curr)) != EQUAL))
       return NOT_A_DIRECTORY;
 
    /* Insert the Node(s) and all other paths not in tree. */
-   result = FT_insertRestOfPath(path, curr, farthestNew);
+   result = FT_insertRestOfPath(path, curr, &first, &last);
    if (result != SUCCESS) {
       return result;
+   }
+
+   /* Update final Node to the FIL type and associated data. */
+   if (Node_createFile(last, contents, length) == NULL) {
+      Node_unlinkChild(curr, first);
+      (void)Node_destroy(first);
+      return MEMORY_ERROR;
    }
 
    return SUCCESS;
@@ -452,6 +440,36 @@ void *FT_replaceFileContents(char *path, void *newContents,
 
    return Node_replaceFileContents(curr, newContents, newLength);
 }
+
+/*--------------------------------------------------------------------*/
+/*
+  Removes the directory hierarchy rooted at path starting from Node
+  curr. If curr is the data structure's root, root becomes NULL.
+
+  Returns NO_SUCH_PATH if curr is not the Node for path,
+  and SUCCESS otherwise.
+ */
+/* static int FT_rmPathAt(char *path, Node curr) {
+
+   Node parent;
+
+   assert(path != NULL);
+   assert(curr != NULL);
+
+   parent = Node_getParent(curr);
+
+   if (!strcmp(path, Node_getPath(curr))) {
+      if (parent == NULL)
+         root = NULL;
+      else
+         Node_unlinkChild(parent, curr);
+
+      FT_removePathFrom(curr);
+
+      return SUCCESS;
+   } else
+      return NO_SUCH_PATH;
+} */
 
 /*--------------------------------------------------------------------*/
 int FT_rmDir(char *path) {
@@ -599,7 +617,6 @@ static void FT_strcatAccumulate(char *str, char *acc) {
    strcat(acc, "\n");
 }
 
-/*--------------------------------------------------------------------*/
 int FT_stat(char *path, boolean *type, size_t *length) {
    Node curr;
 
@@ -645,6 +662,7 @@ char *FT_toString(void) {
    result = malloc(totalStrlen);
    if (result == NULL) {
       DynArray_free(nodes);
+
       return NULL;
    }
    *result = '\0';

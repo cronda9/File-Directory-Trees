@@ -95,7 +95,7 @@ void *Node_replaceFileContents(Node n, void *newContents,
 }
 
 /*--------------------------------------------------------------------*/
-Node Node_create(const char *dir, Node parent) {
+Node Node_createDir(const char *dir, Node parent) {
 
    Node new;
 
@@ -116,6 +116,7 @@ Node Node_create(const char *dir, Node parent) {
    new->parent = parent;
    new->contents = NULL;
    new->type = DIR;
+   new->length = 0;
    new->children = DynArray_new(0);
    if (new->children == NULL) {
       free(new->path);
@@ -127,23 +128,28 @@ Node Node_create(const char *dir, Node parent) {
 }
 
 /*--------------------------------------------------------------------*/
-Node Node_createFile(Node existingNode, void *contents, size_t length) {   
-   assert(existingNode != NULL);
+Node Node_createFile(char *path, void *contents, size_t length) {
+   Node new;
 
-   /* Allocates memory for size of new contents */
-   existingNode->contents = contents;
-   existingNode->type = FIL;
-   existingNode->length = length;
-   
-   DynArray_free(existingNode->children);
+   assert(path != NULL);
 
-   if(existingNode->parent != NULL)
-   {
-      DynArray_sort(existingNode->parent->children,
-                    (int (*)(const void *, const void *))Node_compare);
-                    
+   /* Create defensive copy of path for Node. */
+   new = malloc(sizeof(struct node));
+   if (new == NULL)
+      return NULL;
+   new->path = Node_buildPath(NULL, path);
+   if (new->path == NULL) {
+      free(new);
+      return NULL;
    }
-   return existingNode;
+
+   new->contents = contents;
+   new->type = FIL;
+   new->length = length;
+   new->parent = NULL;
+   new->children = NULL;
+
+   return new;
 }
 
 /*--------------------------------------------------------------------*/
@@ -167,10 +173,6 @@ size_t Node_destroy(Node n) {
       c = DynArray_get(n->children, i);
       count += Node_destroy(c);
    }
-
-   /* Unlink from parent if it has one. */
-   if (Node_getParent(n) != NULL)
-      Node_unlinkChild(Node_getParent(n), n);
 
    DynArray_free(n->children);
 
@@ -216,7 +218,7 @@ size_t Node_getNumChildren(Node n) {
 
 /*--------------------------------------------------------------------*/
 int Node_hasChild(Node n, const char *path, size_t *childID) {
-   size_t index=0;
+   size_t index = 0;
    int result;
    Node checker;
 
@@ -227,12 +229,12 @@ int Node_hasChild(Node n, const char *path, size_t *childID) {
    if (n->type == FIL)
       return 0;
 
-   checker = Node_create(path, NULL);
+   checker = Node_createDir(path, NULL);
    if (checker == NULL)
       return -1;
    result = DynArray_bsearch(
-      n->children, checker, &index,
-      (int (*)(const void *, const void *))Node_compare);
+       n->children, checker, &index,
+       (int (*)(const void *, const void *))Node_compare);
    (void)Node_destroy(checker);
 
    if (childID != NULL)
@@ -295,8 +297,8 @@ int Node_linkChild(Node parent, Node child) {
    child->parent = parent;
 
    if (DynArray_bsearch(
-          parent->children, child, &i,
-          (int (*)(const void *, const void *))Node_compare) == 1)
+           parent->children, child, &i,
+           (int (*)(const void *, const void *))Node_compare) == 1)
       return ALREADY_IN_TREE;
 
    if (DynArray_addAt(parent->children, i, child) == TRUE)
@@ -314,8 +316,8 @@ int Node_unlinkChild(Node parent, Node child) {
 
    /* Find node. */
    if (DynArray_bsearch(
-          parent->children, child, &i,
-          (int (*)(const void *, const void *))Node_compare) == 0)
+           parent->children, child, &i,
+           (int (*)(const void *, const void *))Node_compare) == 0)
       return PARENT_CHILD_ERROR;
 
    /* Remove it. */
@@ -335,7 +337,7 @@ int Node_addChild(Node parent, const char *dir) {
    if (parent->type == FIL)
       return NOT_A_DIRECTORY;
 
-   new = Node_create(dir, parent);
+   new = Node_createDir(dir, parent);
    if (new == NULL)
       return MEMORY_ERROR;
 
