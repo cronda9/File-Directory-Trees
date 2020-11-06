@@ -1,0 +1,122 @@
++run
+Starting program: /u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdtBad4 
+[Inferior 1 (process 28885) exited normally]
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-222.sd7.aarch64
++break 40
+Breakpoint 1 at 0x4028a8: file bdt_client.c, line 40.
++run
+Starting program: /u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdtBad4 
+
+Breakpoint 1, main () at bdt_client.c:40
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:40:1601:beg:0x4028a8
++y
+Undefined command: "y".  Try "help".
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:41:1647:beg:0x4028dc
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:42:1688:beg:0x402910
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:43:1731:beg:0x402944
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:44:1776:beg:0x402978
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:45:1819:beg:0x4029ac
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:46:1852:beg:0x4029c8
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:47:1866:beg:0x4029d0
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:48:1920:beg:0x402a04
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:53:2116:beg:0x402a38
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:54:2162:beg:0x402a6c
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:55:2207:beg:0x402aa0
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:56:2250:beg:0x402ad4
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:57:2283:beg:0x402af0
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:58:2297:beg:0x402af8
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:61:2427:beg:0x402b2c
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:62:2475:beg:0x402b60
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:63:2522:beg:0x402b94
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:64:2565:beg:0x402bc8
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:65:2598:beg:0x402be4
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:66:2612:beg:0x402bec
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:67:2662:beg:0x402c20
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:68:2711:beg:0x402c54
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:69:2761:beg:0x402c88
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:70:2813:beg:0x402cbc
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:71:2865:beg:0x402cf0
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:72:2908:beg:0x402d24
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:73:2941:beg:0x402d40
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:78:3160:beg:0x402d48
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:79:3207:beg:0x402d7c
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:80:3256:beg:0x402db0
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:81:3306:beg:0x402de4
++print(temp)
+$1 = 0x4301c0 ""
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:82:3357:beg:0x402e18
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:83:3401:beg:0x402e4c
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:84:3446:beg:0x402e80
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:85:3494:beg:0x402eb4
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:86:3544:beg:0x402ee8
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:87:3587:beg:0x402f1c
++print(temp)
+$2 = 0x430220 "0\001Ca\na/b\na/b/c\na/b/d\n"
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:88:3620:beg:0x402f38
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:92:3769:beg:0x402f40
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:93:3813:beg:0x402f74
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:94:3856:beg:0x402fa8
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:95:3889:beg:0x402fc4
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:96:3903:beg:0x402fcc
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:97:3943:beg:0x403000
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:98:3987:beg:0x403034
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:99:4030:beg:0x403068
++print(temp)
+$3 = 0x430140 "\020\002Ca\na/y\na/x\n"
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:100:4063:beg:0x403084
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:102:4078:beg:0x40308c
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:103:4114:beg:0x4030b8
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:104:4163:beg:0x4030e4
++n
+/u/cronda/assignments/assignment4/cos217-assignment4/1BDT/bdt_client.c:106:4206:beg:0x403118
++stop
