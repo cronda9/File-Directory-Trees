@@ -79,7 +79,9 @@ disagreements with them? Copy the critTer warnings here, and express
 your disagreement after each warning. If there are no warnings, then
 write "None."
 
+```
 
+```
 
 ------------------------------------------------------------------------
 What warnings does critTer generate on your Part 3 code, and what are
@@ -87,7 +89,69 @@ your disagreements with them? Copy the critTer warnings here, and
 express your disagreement after each warning. If there are no
 warnings, then write "None."
 
+For ft.c:
+```
+   ft.c: line 578: low priority: 
+   A file should contain no more than 15 functions;
+   this file contains 17 functions
 
+   ft.c: line 251: medium priority:
+   Do you want to validate 'contents' through an assert?
+
+   ft.c: line 366: medium priority:
+   Do you want to validate 'newContents' through an assert?
+
+   ft.c: line 512: medium priority:
+   Do you want to validate 'type' through an assert?
+
+   ft.c: line 512: medium priority:
+   Do you want to validate 'length' through an assert?
+
+   a4def.h: line 18: high priority: 
+   A comment should appear above each global variable.
+
+   ft.c: line 577: low priority: 
+   A source code file should contain fewer than 500 lines;
+   this file contains 578 lines
+
+   ft.c: line 56: low priority: 
+   This area is deeply nested at level 4, consider refactoring
+```
+
+For node.c:
+```
+   node.c: line 354: low priority: 
+   A file should contain no more than 15 functions;
+   this file contains 16 functions
+
+   node.c: line 82: medium priority:
+   Do you want to validate 'newContents' through an assert?
+
+   node.c: line 131: medium priority:
+   Do you want to validate 'contents' through an assert?
+
+   node.c: line 234: medium priority:
+   Do you want to validate 'childID' through an assert?
+
+   a4def.h: line 18: high priority: 
+   A comment should appear above each global variable.
+```
+
+All of the assert checks are that way because those arguments are
+not required to be given (and are therefore checked with if statements
+in the code). As for the a4def.h one, it is not our code so we cannot
+comment on it. for the number of functions and module size complaints,
+the interface to ft.h already has 12 required functions so the necessary
+helper methods to do recursion without a queue or stack ADT it was
+necessary to go over the 15. For over 15 in Node, we paired it down a
+lot and even tried with a FileNode ADT as well but it made the whole
+thing way to cluttered and had way to many corner cases so this was best
+for clarity and encapsulation still holds as a Node in a file tree can
+either be a Dir or File, just exactly what fields they have available
+change with whatever flag they are assigned because a file is
+essentially special type of dir in our implementation. The nested thing
+is necessary for preorder recursion and it hurt clarity in our eyes to
+break it up into other functions.
 
 ------------------------------------------------------------------------
 What warnings does splint generate for Part 2's checker, and what are
@@ -95,7 +159,7 @@ your disagreements with them? Copy the splint warnings here, and
 express your disagreement after each warning. If there are no
 warnings, then write "None."
 
-
+None
 
 ------------------------------------------------------------------------
 What warnings does splint generate on Part 3, and what are your
@@ -103,7 +167,7 @@ disagreements with them? Copy the splint warnings here, and express
 your disagreement after each warning. If there are no warnings, then
 write "None."
 
-
+None
 
 ------------------------------------------------------------------------
 For each of the first three faulty BDT implementations required by Step
